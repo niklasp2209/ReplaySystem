@@ -1,0 +1,9 @@
+name: ReplaySystem
+version: '${project.version}'
+main: de.bukkitnews.replay.ReplaySystem
+api-version: 1.21
+depend:
+  - packetevents
+commands:
+  replay:
+    description: Replay Command

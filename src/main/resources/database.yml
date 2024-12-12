@@ -1,0 +1,5 @@
+mongodb:
+  database: database
+  table: table
+  username: admin
+  password: password
