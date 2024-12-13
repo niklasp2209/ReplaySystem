@@ -2,6 +2,7 @@ package de.bukkitnews.replay.module.replay.handle;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
+import com.github.retrooper.packetevents.protocol.world.states.type.StateType;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
@@ -9,10 +10,13 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDe
 import de.bukkitnews.replay.framework.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.recording.Recording;
+import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import de.bukkitnews.replay.module.replay.database.objects.CameraObject;
 import de.bukkitnews.replay.module.replay.database.objects.RecordableObject;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
+import lombok.NonNull;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -29,7 +33,7 @@ public class ReplayHandler {
     private final CameraObject cameraObject;
     private final Set<Replay> replays = new HashSet<>();
 
-    public ReplayHandler(RecordableObject recordableObject, CameraObject cameraObject) {
+    public ReplayHandler(@NonNull RecordableObject recordableObject, @NonNull CameraObject cameraObject) {
         this.recordableObject = recordableObject;
         this.cameraObject = cameraObject;
     }
@@ -37,9 +41,9 @@ public class ReplayHandler {
     /**
      * Returns the replay for the given player, or null if none is found.
      */
-    public Replay getReplayForPlayer(Player player) {
+    public Replay getReplayForPlayer(@NonNull Player player) {
         return replays.stream()
-                .filter(replay -> replay.getViewer().equals(player))
+                .filter(replay -> replay.getPlayer().equals(player))
                 .findFirst()
                 .orElse(null);
     }
@@ -47,14 +51,14 @@ public class ReplayHandler {
     /**
      * Starts a replay for a given recording and player.
      */
-    public void replayRecording(Recording recording, Player player) {
+    public void replayRecording(@NonNull Recording recording, @NonNull Player player) {
         if (getReplayForPlayer(player) != null) {
             player.sendMessage(MessageUtil.getMessage("replay_already"));
             return;
         }
 
         Replay replay = new Replay(recording, player);
-        placeOriginalBlocks(replay.getRecording(), replay.getViewer());
+        placeOriginalBlocks(replay.getRecording(), replay.getPlayer());
         loadRecordables(replay, 0);
         replays.add(replay);
     }
@@ -62,7 +66,7 @@ public class ReplayHandler {
     /**
      * Loads recordables for the replay within the specified tick range.
      */
-    public void loadRecordables(Replay replay, long startTick) {
+    public void loadRecordables(@NonNull Replay replay, long startTick) {
         if (!replay.tryLoadData()) {
             return;
         }
@@ -98,11 +102,11 @@ public class ReplayHandler {
 
         replay.getSpawnedEntities().forEach((uuid, entityId) -> {
             WrapperPlayServerDestroyEntities destroyEntities = new WrapperPlayServerDestroyEntities(entityId);
-            PacketEvents.getAPI().getPlayerManager().getUser(replay.getViewer()).sendPacket(destroyEntities);
+            PacketEvents.getAPI().getPlayerManager().getUser(replay.getPlayer()).sendPacket(destroyEntities);
         });
         replay.getSpawnedEntities().clear();
 
-        placeActualBlocks(replay.getRecording(), replay.getViewer());
+        placeActualBlocks(replay.getRecording(), replay.getPlayer());
         replays.remove(replay);
     }
 
@@ -117,11 +121,11 @@ public class ReplayHandler {
     /**
      * Restarts the given replay from the beginning.
      */
-    public void restartReplay(Replay replay) {
-        placeOriginalBlocks(replay.getRecording(), replay.getViewer());
+    public void restartReplay(@NonNull Replay replay) {
+        placeOriginalBlocks(replay.getRecording(), replay.getPlayer());
         replay.getSpawnedEntities().forEach((uuid, entityId) -> {
             WrapperPlayServerDestroyEntities destroyEntities = new WrapperPlayServerDestroyEntities(entityId);
-            PacketEvents.getAPI().getPlayerManager().getUser(replay.getViewer()).sendPacket(destroyEntities);
+            PacketEvents.getAPI().getPlayerManager().getUser(replay.getPlayer()).sendPacket(destroyEntities);
         });
         replay.getSpawnedEntities().clear();
         replay.restartReplay();
@@ -131,11 +135,11 @@ public class ReplayHandler {
     /**
      * Places the original blocks in the world based on the recording.
      */
-    private void placeOriginalBlocks(Recording recording, Player viewer) {
+    private void placeOriginalBlocks(@NonNull Recording recording, @NonNull Player viewer) {
         List<Material> originalBlocks = recording.getOriginalBlocks();
-        var camera = cameraObject.findById(recording.getCameraId());
-        var corner1 = camera.getCorner1();
-        var corner2 = camera.getCorner2();
+        RecordingArea recordingArea = cameraObject.findById(recording.getCameraId());
+        Location corner1 = recordingArea.getCorner1();
+        Location corner2 = recordingArea.getCorner2();
 
         if (!corner1.getWorld().equals(corner2.getWorld())) {
             throw new IllegalArgumentException("Locations must be in the same world");
@@ -154,8 +158,8 @@ public class ReplayHandler {
                 for (int z = startZ; z <= endZ; z++) {
                     Material material = originalBlocks.get(index);
                     Vector3i position = new Vector3i(x, y, z);
-                    var stateType = StateTypes.getByName("minecraft:" + material.name().toLowerCase());
-                    var wrappedBlockState = WrappedBlockState.getDefaultState(stateType);
+                    StateType stateType = StateTypes.getByName("minecraft:" + material.name().toLowerCase());
+                    WrappedBlockState wrappedBlockState = WrappedBlockState.getDefaultState(stateType);
                     WrapperPlayServerBlockChange blockChangePacket = new WrapperPlayServerBlockChange(position, wrappedBlockState.getGlobalId());
                     PacketEvents.getAPI().getPlayerManager().getUser(viewer).sendPacket(blockChangePacket);
                     index++;
@@ -167,10 +171,10 @@ public class ReplayHandler {
     /**
      * Places the actual blocks in the world based on the recording.
      */
-    private void placeActualBlocks(Recording recording, Player viewer) {
-        var camera = cameraObject.findById(recording.getCameraId());
-        var corner1 = camera.getCorner1();
-        var corner2 = camera.getCorner2();
+    private void placeActualBlocks(@NonNull Recording recording, @NonNull Player viewer) {
+        RecordingArea recordingArea = cameraObject.findById(recording.getCameraId());
+        Location corner1 = recordingArea.getCorner1();
+        Location corner2 = recordingArea.getCorner2();
         World world = corner1.getWorld();
 
         if (!corner1.getWorld().equals(corner2.getWorld())) {
@@ -188,7 +192,7 @@ public class ReplayHandler {
             for (int y = startY; y <= endY; y++) {
                 for (int z = startZ; z <= endZ; z++) {
                     Block block = world.getBlockAt(x, y, z);
-                    var actualBlockState = SpigotConversionUtil.fromBukkitBlockData(block.getBlockData());
+                    WrappedBlockState actualBlockState = SpigotConversionUtil.fromBukkitBlockData(block.getBlockData());
                     Vector3i position = new Vector3i(x, y, z);
                     WrapperPlayServerBlockChange blockChangePacket = new WrapperPlayServerBlockChange(position, actualBlockState.getGlobalId());
                     PacketEvents.getAPI().getPlayerManager().getUser(viewer).sendPacket(blockChangePacket);

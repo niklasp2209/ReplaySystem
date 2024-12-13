@@ -7,6 +7,7 @@ import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import de.bukkitnews.replay.module.replay.handle.ReplayHandler;
+import lombok.NonNull;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Optional;
@@ -16,13 +17,13 @@ public class ReplayTask extends BukkitRunnable {
     private final Replay replay;
     private final ReplayHandler replayHandler;
     private long currentTick = 0;
-    private User user;
+    private final User user;
     private boolean paused = true;
 
-    public ReplayTask(Replay replay) {
+    public ReplayTask(@NonNull Replay replay) {
         this.replay = replay;
         this.replayHandler = ReplayModule.instance.getReplayHandler();
-        this.user = PacketEvents.getAPI().getPlayerManager().getUser(replay.getViewer());
+        this.user = PacketEvents.getAPI().getPlayerManager().getUser(replay.getPlayer());
     }
 
     /**
@@ -35,7 +36,7 @@ public class ReplayTask extends BukkitRunnable {
         }
 
         if (currentTick >= replay.getRecording().getTickDuration()) {
-            replay.getViewer().sendMessage(MessageUtil.getMessage("replay_ended"));
+            replay.getPlayer().sendMessage(MessageUtil.getMessage("replay_ended"));
             replayHandler.stopReplay(replay);
             return;
         }
@@ -50,7 +51,7 @@ public class ReplayTask extends BukkitRunnable {
             return;
         }
 
-        replay.getViewer().setExp((float) currentTick / replay.getRecording().getTickDuration());
+        replay.getPlayer().setExp((float) currentTick / replay.getRecording().getTickDuration());
 
         Optional.ofNullable(replay.getRecordableQueue().poll())
                 .ifPresentOrElse(

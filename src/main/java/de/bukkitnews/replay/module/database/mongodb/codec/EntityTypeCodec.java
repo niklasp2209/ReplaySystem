@@ -1,5 +1,6 @@
 package de.bukkitnews.replay.module.database.mongodb.codec;
 
+import lombok.NonNull;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
 import org.bson.codecs.Codec;
@@ -15,7 +16,7 @@ import java.util.Objects;
 public class EntityTypeCodec implements Codec<EntityType> {
 
     @Override
-    public EntityType decode(BsonReader bsonReader, DecoderContext decoderContext) {
+    public EntityType decode(@NonNull BsonReader bsonReader, @NonNull DecoderContext decoderContext) {
         bsonReader.readStartDocument();
         String entityTypeString = bsonReader.readString("entityType");
         bsonReader.readEndDocument();
@@ -28,7 +29,7 @@ public class EntityTypeCodec implements Codec<EntityType> {
     }
 
     @Override
-    public void encode(BsonWriter bsonWriter, EntityType entityType, EncoderContext encoderContext) {
+    public void encode(@NonNull BsonWriter bsonWriter, @NonNull EntityType entityType, @NonNull EncoderContext encoderContext) {
         Objects.requireNonNull(entityType, "EntityType cannot be null");
 
         bsonWriter.writeStartDocument();

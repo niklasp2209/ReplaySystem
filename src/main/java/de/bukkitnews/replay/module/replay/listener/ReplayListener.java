@@ -2,6 +2,7 @@ package de.bukkitnews.replay.module.replay.listener;
 
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import de.bukkitnews.replay.module.replay.handle.ReplayHandler;
+import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,7 +14,7 @@ public class ReplayListener implements Listener {
 
     private final ReplayHandler replayHandler;
 
-    public ReplayListener(ReplayHandler replayHandler) {
+    public ReplayListener(@NonNull ReplayHandler replayHandler) {
         this.replayHandler = replayHandler;
     }
 
@@ -23,7 +24,7 @@ public class ReplayListener implements Listener {
      * @param event The PlayerInteractEvent triggered by the player.
      */
     @EventHandler
-    public void handleRightClick(PlayerInteractEvent event) {
+    public void handleRightClick(@NonNull PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }

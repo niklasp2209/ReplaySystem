@@ -5,10 +5,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDe
 import de.bukkitnews.replay.framework.exception.EntityNotFoundException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
 import java.util.Optional;
@@ -31,19 +28,16 @@ public class DespawnEntityRecordable extends Recordable {
      * @throws EntityNotFoundException if the entity is not found in the replay's spawned entities
      */
     @Override
-    public void replay(Replay replay, User user) throws EntityNotFoundException {
-        // Retrieve the entity's ID from the replay's spawned entities map
+    public void replay(@NonNull Replay replay, @NonNull User user) throws EntityNotFoundException {
         Optional<Integer> entityOptional = Optional.ofNullable(replay.getSpawnedEntities().get(bukkitEntityId));
 
         if (!entityOptional.isPresent()) {
             throw new EntityNotFoundException("Entity with UUID " + bukkitEntityId + " not found.");
         }
 
-        // Send the packet to destroy the entity for the user
         WrapperPlayServerDestroyEntities destroyEntities = new WrapperPlayServerDestroyEntities(entityOptional.get());
         user.sendPacket(destroyEntities);
 
-        // Remove the entity from the list of spawned entities
         replay.getSpawnedEntities().remove(bukkitEntityId);
     }
 }

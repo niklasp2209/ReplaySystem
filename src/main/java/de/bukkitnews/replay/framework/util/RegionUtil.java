@@ -1,6 +1,7 @@
 package de.bukkitnews.replay.framework.util;
 
 import de.bukkitnews.replay.framework.util.region.Region;
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,6 +12,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Slime;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -29,7 +31,7 @@ public class RegionUtil {
      *
      * @param tag The tag to filter selector entities by.
      */
-    public void removeSelectorsByTag(String tag) {
+    public void removeSelectorsByTag(@NonNull String tag) {
         Bukkit.getWorlds().forEach(world ->
                 world.getEntities().stream()
                         .filter(entity -> entity.getScoreboardTags().contains(SELECTOR_TAG_PREFIX + tag))
@@ -64,7 +66,7 @@ public class RegionUtil {
      * @param id     The unique identifier for the selector.
      * @param color  The color for the selector's team.
      */
-    public void createSelector(Region region, World world, String id, ChatColor color) {
+    public void createSelector(@NonNull Region region, @Nullable World world, @NonNull String id, @NonNull ChatColor color) {
         Optional<Location> corner1Opt = region.getCorner1();
         Optional<Location> corner2Opt = region.getCorner2();
 
@@ -97,7 +99,6 @@ public class RegionUtil {
         if (color != null) team.setColor(color);
         team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
 
-        // Spawn selector entities along the edges of the region.
         IntStream.rangeClosed(minX, maxX).forEach(x -> {
             spawnSelectorEntity(world, team, id, x, minY, minZ);
             spawnSelectorEntity(world, team, id, x, maxY, minZ);
@@ -130,7 +131,7 @@ public class RegionUtil {
      * @param y     The Y-coordinate of the entity.
      * @param z     The Z-coordinate of the entity.
      */
-    private void spawnSelectorEntity(World world, Team team, String id, double x, double y, double z) {
+    private void spawnSelectorEntity(@NonNull World world, @NonNull Team team, @NonNull String id, double x, double y, double z) {
         Slime slime = (Slime) world.spawnEntity(new Location(world, x + 0.5, y, z + 0.5), EntityType.SLIME);
         slime.setInvisible(true);
         slime.setSize(2);

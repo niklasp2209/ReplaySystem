@@ -25,7 +25,7 @@ public class ActiveRecording {
     private BukkitTask scanEntitiesTask;
     private BukkitTask trackEquipmentTask;
     private Queue<Recordable> recordableBuffer = new ConcurrentLinkedQueue<>();
-    private volatile boolean isFlushing = false;
+    private volatile boolean isProcessingBuffer = false;
 
     /**
      * Creates a new active recording for the given camera and owner.
@@ -111,22 +111,22 @@ public class ActiveRecording {
     }
 
     /**
-     * Attempts to start flushing the recordable buffer.
+     * Attempts to initiate the buffer processing task, ensuring it's not already running.
      *
-     * @return true if flushing was successfully started, false if already flushing.
+     * @return true if the process was started, false if it's already running.
      */
-    public synchronized boolean tryStartFlushing() {
-        if (!isFlushing) {
-            isFlushing = true;
-            return true;
+    public synchronized boolean initiateBufferProcessing() {
+        if (isProcessingBuffer) {
+            return false;
         }
-        return false;
+        isProcessingBuffer = true;
+        return true;
     }
 
     /**
-     * Ends the flushing process for the recordable buffer.
+     * Completes the buffer processing task.
      */
-    public void endFlushing() {
-        isFlushing = false;
+    public void completeBufferProcessing() {
+        isProcessingBuffer = false;
     }
 }

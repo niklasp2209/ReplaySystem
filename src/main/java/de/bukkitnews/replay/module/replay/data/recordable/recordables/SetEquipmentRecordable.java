@@ -8,12 +8,10 @@ import de.bukkitnews.replay.framework.exception.EntityNotFoundException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +40,7 @@ public class SetEquipmentRecordable extends Recordable {
      * @throws EntityNotFoundException if the entity with the given bukkitEntityId is not found
      */
     @Override
-    public void replay(Replay replay, User user) throws EntityNotFoundException {
+    public void replay(@NonNull Replay replay, @NonNull User user) throws EntityNotFoundException {
         Integer entityId = replay.getSpawnedEntities().get(bukkitEntityId);
 
         if (entityId == null) {
@@ -68,7 +66,7 @@ public class SetEquipmentRecordable extends Recordable {
      * @param slot the equipment slot for the item
      * @param item the item to add to the equipment list
      */
-    private void addEquipmentToList(List<Equipment> equipmentList, EquipmentSlot slot, ItemStack item) {
+    private void addEquipmentToList(@NonNull List<Equipment> equipmentList, @NonNull EquipmentSlot slot, @Nullable ItemStack item) {
         if (item != null) {
             equipmentList.add(new Equipment(slot, SpigotConversionUtil.fromBukkitItemStack(item)));
         }

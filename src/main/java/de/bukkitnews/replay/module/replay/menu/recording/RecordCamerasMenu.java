@@ -8,6 +8,7 @@ import de.bukkitnews.replay.framework.util.inventory.MenuUtil;
 import de.bukkitnews.replay.framework.util.inventory.MultiMenu;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
+import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -52,7 +53,7 @@ public class RecordCamerasMenu extends MultiMenu {
      * @throws MenuManagerException If an error occurs during the interaction.
      */
     @Override
-    public void onItemInteraction(InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
+    public void onItemInteraction(@NonNull InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
         ItemStack clickedItem = event.getCurrentItem();
 
         if (clickedItem == null || !clickedItem.hasItemMeta()) {
@@ -82,7 +83,7 @@ public class RecordCamerasMenu extends MultiMenu {
      * @param event The InventoryClickEvent triggered by the player.
      * @param recordingArea The camera object the player interacted with.
      */
-    private void handleCameraInteraction(InventoryClickEvent event, RecordingArea recordingArea) {
+    private void handleCameraInteraction(@NonNull InventoryClickEvent event, @NonNull RecordingArea recordingArea) {
         if (event.isLeftClick()) {
             ReplayModule.instance.getRecordingHandler().startRecording(player, recordingArea);
             player.closeInventory();
@@ -110,7 +111,7 @@ public class RecordCamerasMenu extends MultiMenu {
      * @param recordingArea The camera to be represented by the ItemStack.
      * @return An ItemStack representing the camera.
      */
-    private ItemStack createCameraItem(RecordingArea recordingArea) {
+    private ItemStack createCameraItem(@NonNull RecordingArea recordingArea) {
         ItemStack itemStack = new ItemUtil(Material.ENDER_EYE)
                 .setDisplayname(recordingArea.getName())
                 .setLore(" ", MessageUtil.getMessage("item_replays_lore1"), MessageUtil.getMessage("item_replays_lore2"))

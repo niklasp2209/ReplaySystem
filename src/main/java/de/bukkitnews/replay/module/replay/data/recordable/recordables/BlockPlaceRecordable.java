@@ -2,6 +2,7 @@ package de.bukkitnews.replay.module.replay.data.recordable.recordables;
 
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
+import com.github.retrooper.packetevents.protocol.world.states.type.StateType;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
@@ -40,8 +41,8 @@ public class BlockPlaceRecordable extends Recordable {
         }
 
         Vector3i position = new Vector3i(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-        var stateType = StateTypes.getByName("minecraft:" + material.name().toLowerCase());
-        var wrappedBlockState = WrappedBlockState.getDefaultState(stateType);
+        StateType stateType = StateTypes.getByName("minecraft:" + material.name().toLowerCase());
+        WrappedBlockState wrappedBlockState = WrappedBlockState.getDefaultState(stateType);
 
         WrapperPlayServerBlockChange blockChangePacket = new WrapperPlayServerBlockChange(position, wrappedBlockState.getGlobalId());
         user.sendPacket(blockChangePacket);

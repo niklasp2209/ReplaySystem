@@ -2,6 +2,7 @@ package de.bukkitnews.replay.module;
 
 import de.bukkitnews.replay.ReplaySystem;
 import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.event.HandlerList;
@@ -20,7 +21,7 @@ public abstract class CustomModule {
     private List<Listener> listeners;
     private Map<String, CommandExecutor> commandExecutors;
 
-    public CustomModule(ReplaySystem replaySystem, String name) {
+    public CustomModule(@NonNull ReplaySystem replaySystem, @NonNull String name) {
         this.replaySystem = replaySystem;
         this.moduleName = name;
         this.commandExecutors = new HashMap<>();

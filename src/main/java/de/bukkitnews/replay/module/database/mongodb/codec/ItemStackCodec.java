@@ -1,5 +1,6 @@
 package de.bukkitnews.replay.module.database.mongodb.codec;
 
+import lombok.NonNull;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
 import org.bson.codecs.Codec;
@@ -7,6 +8,7 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Codec implementation for serializing and deserializing ItemStack objects to and from BSON.
@@ -14,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 public class ItemStackCodec implements Codec<ItemStack> {
 
     @Override
-    public ItemStack decode(BsonReader bsonReader, DecoderContext decoderContext) {
+    public ItemStack decode(@NonNull BsonReader bsonReader, @NonNull DecoderContext decoderContext) {
         bsonReader.readStartDocument();
         String materialName = bsonReader.readString("type");
         int amount = bsonReader.readInt32("amount");
@@ -29,7 +31,7 @@ public class ItemStackCodec implements Codec<ItemStack> {
     }
 
     @Override
-    public void encode(BsonWriter bsonWriter, ItemStack itemStack, EncoderContext encoderContext) {
+    public void encode(@NonNull BsonWriter bsonWriter, @Nullable ItemStack itemStack, @NonNull EncoderContext encoderContext) {
         if (itemStack == null) {
             throw new IllegalArgumentException("ItemStack cannot be null during encoding.");
         }

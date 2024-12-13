@@ -1,6 +1,7 @@
 package de.bukkitnews.replay.framework.util.inventory;
 
 import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public class MenuUtil {
     private final HashMap<String, Object> dataMap = new HashMap<>();
     private final Stack<Menu> history = new Stack<>();
 
-    public MenuUtil(Player player) {
+    public MenuUtil(@NonNull Player player) {
         this.player = player;
     }
 
@@ -21,11 +22,11 @@ public class MenuUtil {
      * @param identifier A key to store the data by
      * @param data       The data itself to be stored
      */
-    public void setData(String identifier, Object data) {
+    public void setData(@NonNull String identifier, @NonNull Object data) {
         this.dataMap.put(identifier, data);
     }
 
-    public void setData(Enum identifier, Object data) {
+    public void setData(@NonNull Enum identifier, @NonNull Object data) {
         this.dataMap.put(identifier.toString(), data);
     }
 
@@ -33,15 +34,15 @@ public class MenuUtil {
      * @param identifier The key for the data stored in the PMC
      * @return The retrieved value or null if not found
      */
-    public Object getData(String identifier) {
+    public Object getData(@NonNull String identifier) {
         return this.dataMap.get(identifier);
     }
 
-    public Object getData(Enum identifier) {
+    public Object getData(@NonNull Enum identifier) {
         return this.dataMap.get(identifier.toString());
     }
 
-    public <T> T getData(String identifier, Class<T> classRef) {
+    public <T> T getData(@NonNull String identifier, @NonNull Class<T> classRef) {
 
         Object obj = this.dataMap.get(identifier);
 
@@ -52,7 +53,7 @@ public class MenuUtil {
         }
     }
 
-    public <T> T getData(Enum identifier, Class<T> classRef) {
+    public <T> T getData(@NonNull Enum identifier, @NonNull Class<T> classRef) {
 
         Object obj = this.dataMap.get(identifier.toString());
 
@@ -71,7 +72,7 @@ public class MenuUtil {
         return this.history.pop();
     }
 
-    public void pushMenu(Menu menu) {
+    public void pushMenu(@NonNull Menu menu) {
         this.history.push(menu);
     }
 

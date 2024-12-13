@@ -5,10 +5,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerHu
 import de.bukkitnews.replay.framework.exception.EntityNotFoundException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
 import java.util.Optional;
@@ -31,7 +28,7 @@ public class EntityHurtRecordable extends Recordable {
      * @throws EntityNotFoundException if the entity is not found in the replay's spawned entities
      */
     @Override
-    public void replay(Replay replay, User user) throws EntityNotFoundException {
+    public void replay(@NonNull Replay replay, @NonNull User user) throws EntityNotFoundException {
         Optional<Integer> entityOptional = Optional.ofNullable(replay.getSpawnedEntities().get(bukkitEntityId));
 
         if (!entityOptional.isPresent()) {

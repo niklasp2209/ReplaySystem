@@ -8,6 +8,7 @@ import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.SetEquipmentRecordable;
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.SwingHandRecordable;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
+import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,7 +22,7 @@ public class ReplayPacketHandler implements PacketListener {
      * @param event The PacketReceiveEvent triggered by the player action.
      */
     @Override
-    public void onPacketReceive(PacketReceiveEvent event) {
+    public void onPacketReceive(@NonNull PacketReceiveEvent event) {
         Player player = (Player) event.getPlayer();
 
         Optional<ActiveRecording> activeRecordingOpt = ReplayModule.instance.getRecordingHandler().getPlayerActiveRecording(player);

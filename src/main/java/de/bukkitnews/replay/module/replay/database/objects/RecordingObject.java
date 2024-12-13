@@ -7,6 +7,8 @@ import com.mongodb.client.model.Updates;
 import de.bukkitnews.replay.api.DatabaseAPI;
 import de.bukkitnews.replay.module.database.mongodb.MongoConnectionManager;
 import de.bukkitnews.replay.module.replay.data.recording.Recording;
+import lombok.NonNull;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class RecordingObject implements DatabaseAPI<Recording> {
      *
      * @param mongoDatabaseService The MongoService instance for accessing the database.
      */
-    public RecordingObject(MongoConnectionManager mongoDatabaseService) {
+    public RecordingObject(@NonNull MongoConnectionManager mongoDatabaseService) {
         this.collection = mongoDatabaseService.getDatabase().getCollection("recordings", Recording.class);
     }
 
@@ -34,7 +36,7 @@ public class RecordingObject implements DatabaseAPI<Recording> {
      * @param entity The recording to be inserted.
      */
     @Override
-    public void insert(Recording entity) {
+    public void insert(@NonNull Recording entity) {
         collection.insertOne(entity);
     }
 
@@ -45,7 +47,7 @@ public class RecordingObject implements DatabaseAPI<Recording> {
      * @return The found recording or null if not found.
      */
     @Override
-    public Recording findById(ObjectId id) {
+    public Recording findById(@NonNull ObjectId id) {
         return collection.find(Filters.eq("_id", id)).first();
     }
 
@@ -65,13 +67,15 @@ public class RecordingObject implements DatabaseAPI<Recording> {
      * @param entity The recording with updated data.
      */
     @Override
-    public void update(Recording entity) {
-        var updates = Updates.combine(
+    public void update(@NonNull Recording entity) {
+        Bson updates = Updates.combine(
                 Updates.set("endTime", entity.getEndTime()),
                 Updates.set("endTick", entity.getEndTick())
         );
         collection.updateOne(Filters.eq("_id", entity.getId()), updates);
     }
+
+
 
     /**
      * Deletes a recording from the database.
@@ -79,7 +83,7 @@ public class RecordingObject implements DatabaseAPI<Recording> {
      * @param entity The recording to be deleted.
      */
     @Override
-    public void delete(Recording entity) {
+    public void delete(@NonNull Recording entity) {
         collection.deleteOne(Filters.eq("_id", entity.getId()));
     }
 
@@ -89,7 +93,7 @@ public class RecordingObject implements DatabaseAPI<Recording> {
      * @param cameraId The ObjectId of the camera.
      * @return A list of recordings for the specified camera.
      */
-    public List<Recording> getCameraRecordings(ObjectId cameraId) {
+    public List<Recording> getCameraRecordings(@NonNull ObjectId cameraId) {
         return List.copyOf(collection.find(Filters.eq("cameraId", cameraId))
                 .sort(Sorts.descending("startTime"))
                 .into(new ArrayList<>()));

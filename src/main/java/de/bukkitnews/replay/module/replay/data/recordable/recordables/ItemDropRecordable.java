@@ -10,10 +10,7 @@ import de.bukkitnews.replay.framework.exception.EntityCreationException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -42,7 +39,7 @@ public class ItemDropRecordable extends Recordable {
      * @throws EntityCreationException if an error occurs while creating the entity
      */
     @Override
-    public void replay(Replay replay, User user) throws EntityCreationException {
+    public void replay(@NonNull Replay replay, @NonNull User user) throws EntityCreationException {
         try {
             int entityId = generateEntityId();
 

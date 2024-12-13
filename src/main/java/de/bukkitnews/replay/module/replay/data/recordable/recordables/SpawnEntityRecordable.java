@@ -7,10 +7,7 @@ import com.mojang.authlib.GameProfile;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -46,7 +43,7 @@ public class SpawnEntityRecordable extends Recordable {
     private UUID bukkitEntityId;
     private String playerName;
 
-    public SpawnEntityRecordable(Entity entity) {
+    public SpawnEntityRecordable(@NonNull Entity entity) {
         this.entityType = entity.getType();
         this.location = entity.getLocation();
         this.bukkitEntityId = entity.getUniqueId();
@@ -63,10 +60,10 @@ public class SpawnEntityRecordable extends Recordable {
      * @throws Exception if there is an issue during the replay
      */
     @Override
-    public void replay(Replay replay, User user) throws Exception {
+    public void replay(@NonNull Replay replay, @NonNull User user) throws Exception {
         if(entityType == EntityType.PLAYER){
 
-            Player player = replay.getViewer();
+            Player player = replay.getPlayer();
             CraftPlayer craftPlayer = (CraftPlayer) player;
             ServerPlayer serverPlayer = craftPlayer.getHandle();
             MinecraftServer minecraftServer = serverPlayer.getServer();
@@ -109,7 +106,7 @@ public class SpawnEntityRecordable extends Recordable {
         }
     }
 
-    private void setValue(Object packet, String fieldName, Object value) {
+    private void setValue(@NonNull Object packet, @NonNull String fieldName, @NonNull Object value) {
         try {
             Field field = packet.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);

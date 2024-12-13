@@ -4,13 +4,14 @@ import de.bukkitnews.replay.ReplaySystem;
 import de.bukkitnews.replay.module.CustomModule;
 import de.bukkitnews.replay.module.database.mongodb.MongoConnectionManager;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 @Getter
 public class DatabaseModule extends CustomModule {
 
     private MongoConnectionManager mongoConnectionManager;
 
-    public DatabaseModule(ReplaySystem replaySystem){
+    public DatabaseModule(@NotNull ReplaySystem replaySystem){
         super(replaySystem, "Database");
     }
 

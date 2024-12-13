@@ -18,6 +18,7 @@ import de.bukkitnews.replay.module.replay.handle.ReplayHandler;
 import de.bukkitnews.replay.module.replay.task.TickTrackerTask;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.plugin.PluginManager;
 
 import java.util.Optional;
@@ -35,7 +36,7 @@ public class ReplayModule extends CustomModule {
     private MongoConnectionManager mongoConnectionManager;
 
 
-    public ReplayModule(ReplaySystem replaySystem){
+    public ReplayModule(@NonNull ReplaySystem replaySystem){
         super(replaySystem, "Replay");
 
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(getReplaySystem()));
@@ -52,9 +53,9 @@ public class ReplayModule extends CustomModule {
 
         this.databaseObjects = new DatabaseObjects(getReplaySystem().getMongoConnectionManager());
 
-        this.cameraHandler = new CameraHandler(databaseObjects.getCameraObject());
-        this.recordingHandler = new RecordingHandler(databaseObjects.getRecordingObject(), databaseObjects.getRecordableObject());
-        this.replayHandler = new ReplayHandler(databaseObjects.getRecordableObject(), databaseObjects.getCameraObject());
+        this.cameraHandler = new CameraHandler(this.databaseObjects.getCameraObject());
+        this.recordingHandler = new RecordingHandler(this.databaseObjects.getRecordingObject(), this.databaseObjects.getRecordableObject());
+        this.replayHandler = new ReplayHandler(this.databaseObjects.getRecordableObject(), this.databaseObjects.getCameraObject());
 
         PacketEvents.getAPI().getEventManager()
                 .registerListener(new ReplayPacketHandler(), PacketListenerPriority.NORMAL);
@@ -72,10 +73,10 @@ public class ReplayModule extends CustomModule {
         PacketEvents.getAPI().terminate();
     }
 
-    private void initListener(PluginManager pluginManager){
+    private void initListener(@NonNull PluginManager pluginManager){
         pluginManager.registerEvents(new CameraCreationListener(), getReplaySystem());
         pluginManager.registerEvents(new BukkitListener(), getReplaySystem());
-        pluginManager.registerEvents(new ReplayListener(replayHandler), getReplaySystem());
+        pluginManager.registerEvents(new ReplayListener(this.replayHandler), getReplaySystem());
     }
 
     private void initCommands(){

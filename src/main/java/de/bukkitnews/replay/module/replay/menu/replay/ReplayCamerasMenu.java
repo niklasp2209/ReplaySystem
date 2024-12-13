@@ -11,6 +11,7 @@ import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.menu.recording.RecordingsMenu;
 import jline.internal.Nullable;
+import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -26,7 +27,7 @@ public class ReplayCamerasMenu extends MultiMenu {
 
     private static final NamespacedKey CAMERA_ID_KEY = new NamespacedKey(ReplayModule.instance.getReplaySystem(), "camera_id");
 
-    public ReplayCamerasMenu(MenuUtil menuUtil) {
+    public ReplayCamerasMenu(@NonNull MenuUtil menuUtil) {
         super(menuUtil);
     }
 
@@ -46,7 +47,7 @@ public class ReplayCamerasMenu extends MultiMenu {
     }
 
     @Override
-    public void onItemInteraction(InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
+    public void onItemInteraction(@NonNull InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
         if (event.getCurrentItem() == null || !event.getCurrentItem().hasItemMeta()) {
             return;
         }
@@ -96,7 +97,7 @@ public class ReplayCamerasMenu extends MultiMenu {
      * @param recordingArea The camera to be represented.
      * @return An ItemStack representing the camera.
      */
-    private ItemStack createCameraItem(RecordingArea recordingArea) {
+    private ItemStack createCameraItem(@NonNull RecordingArea recordingArea) {
         ItemStack itemStack = new ItemUtil(Material.ENDER_EYE)
                 .setDisplayname(recordingArea.getName())
                 .setLore(" ", MessageUtil.getMessage("item_replays_lore1"), MessageUtil.getMessage("item_replays_lore2"))

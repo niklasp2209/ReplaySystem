@@ -3,8 +3,11 @@ package de.bukkitnews.replay.module;
 import de.bukkitnews.replay.ReplaySystem;
 import de.bukkitnews.replay.module.database.DatabaseModule;
 import de.bukkitnews.replay.module.replay.ReplayModule;
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
+import java.util.Optional;
 
 /**
  * Manages and controls the lifecycle of modules within the HotPotato application.
@@ -15,7 +18,7 @@ public final class ModuleManager {
     private final ReplaySystem replaySystem;
     private final LinkedHashMap<Class<? extends CustomModule>, CustomModule> modules;
 
-    public ModuleManager(ReplaySystem replaySystem){
+    public ModuleManager(@NonNull ReplaySystem replaySystem){
         this.replaySystem = replaySystem;
         this.modules = new LinkedHashMap<>();
     }
@@ -64,7 +67,7 @@ public final class ModuleManager {
      * @param moduleClass The class of the module to be retrieved.
      * @return The requested module if it exists, otherwise null.
      */
-    public CustomModule getModule(Class<? extends CustomModule> moduleClass) {
-        return this.modules.get(moduleClass);
+    public Optional<CustomModule> getModule(@Nullable Class<? extends CustomModule> moduleClass) {
+        return Optional.ofNullable(modules.get(moduleClass));
     }
 }

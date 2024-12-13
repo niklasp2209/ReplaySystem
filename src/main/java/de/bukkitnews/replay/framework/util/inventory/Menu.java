@@ -4,6 +4,7 @@ import de.bukkitnews.replay.framework.exception.MenuManagerException;
 import de.bukkitnews.replay.framework.exception.MenuManagerNotSetupException;
 import de.bukkitnews.replay.framework.util.InventoryUtil;
 import de.bukkitnews.replay.framework.util.ItemUtil;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -28,7 +29,7 @@ public abstract class Menu implements InventoryHolder {
      *
      * @param menuUtil Utility object for managing player-specific menu details.
      */
-    public Menu(MenuUtil menuUtil) {
+    public Menu(@NonNull MenuUtil menuUtil) {
         this.menuUtil = menuUtil;
         this.player = menuUtil.getPlayer();
     }
@@ -132,7 +133,7 @@ public abstract class Menu implements InventoryHolder {
      *
      * @param fillerItem The item to place in all empty slots.
      */
-    public void fillEmptySlots(ItemStack fillerItem) {
+    public void fillEmptySlots(@NonNull ItemStack fillerItem) {
         for (int i = 0; i < getMenuSize(); i++) {
             if (inventory.getItem(i) == null) {
                 inventory.setItem(i, fillerItem);

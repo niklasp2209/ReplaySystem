@@ -1,5 +1,6 @@
 package de.bukkitnews.replay.module.database.mongodb.codec;
 
+import lombok.NonNull;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
 import org.bson.Document;
@@ -17,7 +18,7 @@ import org.bukkit.World;
 public class LocationCodec implements Codec<Location> {
 
     @Override
-    public Location decode(BsonReader reader, DecoderContext context) {
+    public Location decode(@NonNull BsonReader reader, @NonNull DecoderContext context) {
         Document document = new DocumentCodec().decode(reader, context);
         World world = Bukkit.getWorld(document.getString("world"));
         if (world == null) {
@@ -34,7 +35,7 @@ public class LocationCodec implements Codec<Location> {
     }
 
     @Override
-    public void encode(BsonWriter writer, Location location, EncoderContext context) {
+    public void encode(@NonNull BsonWriter writer, @NonNull Location location, @NonNull EncoderContext context) {
         writer.writeStartDocument();
         writer.writeString("world", location.getWorld().getName());
         writer.writeDouble("x", location.getX());

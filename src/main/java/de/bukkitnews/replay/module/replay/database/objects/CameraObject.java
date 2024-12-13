@@ -6,6 +6,8 @@ import com.mongodb.client.model.Updates;
 import de.bukkitnews.replay.api.DatabaseAPI;
 import de.bukkitnews.replay.module.database.mongodb.MongoConnectionManager;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
+import lombok.NonNull;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ public class CameraObject implements DatabaseAPI<RecordingArea> {
      *
      * @param mongoDatabaseService The MongoService instance for accessing the database.
      */
-    public CameraObject(MongoConnectionManager mongoDatabaseService) {
+    public CameraObject(@NonNull MongoConnectionManager mongoDatabaseService) {
         this.collection = mongoDatabaseService.getDatabase().getCollection("cameras", RecordingArea.class);
     }
 
@@ -31,7 +33,7 @@ public class CameraObject implements DatabaseAPI<RecordingArea> {
      * @param recordingArea The camera to be inserted.
      */
     @Override
-    public void insert(RecordingArea recordingArea) {
+    public void insert(@NonNull RecordingArea recordingArea) {
         collection.insertOne(recordingArea);
     }
 
@@ -42,7 +44,7 @@ public class CameraObject implements DatabaseAPI<RecordingArea> {
      * @return The found camera or null if not found.
      */
     @Override
-    public RecordingArea findById(ObjectId id) {
+    public RecordingArea findById(@NonNull ObjectId id) {
         return collection.find(Filters.eq("_id", id)).first();
     }
 
@@ -62,8 +64,8 @@ public class CameraObject implements DatabaseAPI<RecordingArea> {
      * @param recordingArea The camera with updated data.
      */
     @Override
-    public void update(RecordingArea recordingArea) {
-        var updates = Updates.combine(
+    public void update(@NonNull RecordingArea recordingArea) {
+        Bson updates = Updates.combine(
                 Updates.set("name", recordingArea.getName())
         );
         collection.updateOne(Filters.eq("_id", recordingArea.getId()), updates);
@@ -75,7 +77,7 @@ public class CameraObject implements DatabaseAPI<RecordingArea> {
      * @param recordingArea The camera to be deleted.
      */
     @Override
-    public void delete(RecordingArea recordingArea) {
+    public void delete(@NonNull RecordingArea recordingArea) {
         collection.deleteOne(Filters.eq("_id", recordingArea.getId()));
     }
 
@@ -85,7 +87,7 @@ public class CameraObject implements DatabaseAPI<RecordingArea> {
      * @param owner The UUID of the owner.
      * @return A list of cameras owned by the specified player.
      */
-    public List<RecordingArea> findAllByOwnerId(UUID owner) {
+    public List<RecordingArea> findAllByOwnerId(@NonNull UUID owner) {
         return new ArrayList<>(collection.find(Filters.eq("owner", owner)).into(new ArrayList<>()));
     }
 }

@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * This is the main class for the "ReplaySystem" plugin,
  * developed as part of the BukkitNews project.
+ * Source: <a href="https://hypixel.net/threads/dev-blog-10-replay-system-technical-rundown.3234748/">...</a>
  *
  * Created on: 11.12.2024
  */

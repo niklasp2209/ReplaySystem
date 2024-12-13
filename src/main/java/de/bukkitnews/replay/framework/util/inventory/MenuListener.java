@@ -2,6 +2,7 @@ package de.bukkitnews.replay.framework.util.inventory;
 
 import de.bukkitnews.replay.framework.exception.MenuManagerException;
 import de.bukkitnews.replay.framework.exception.MenuManagerNotSetupException;
+import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,7 +17,7 @@ public class MenuListener implements Listener {
      * @param event The inventory click event triggered by a player.
      */
     @EventHandler
-    public void onMenuClick(InventoryClickEvent event) {
+    public void onMenuClick(@NonNull InventoryClickEvent event) {
         InventoryHolder holder = event.getInventory().getHolder();
 
         if (holder instanceof Menu menu) {

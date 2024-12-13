@@ -11,6 +11,7 @@ import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.data.recording.Recording;
 import de.bukkitnews.replay.module.replay.handle.RecordingHandler;
 import de.bukkitnews.replay.module.replay.handle.ReplayHandler;
+import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -32,7 +33,7 @@ public class RecordingsMenu extends MultiMenu {
     private final ReplayHandler replayHandler;
     private final RecordingArea recordingArea;
 
-    public RecordingsMenu(MenuUtil menuUtil) {
+    public RecordingsMenu(@NonNull MenuUtil menuUtil) {
         super(menuUtil);
 
         this.recordingHandler = ReplayModule.instance.getRecordingHandler();
@@ -56,7 +57,7 @@ public class RecordingsMenu extends MultiMenu {
     }
 
     @Override
-    public void onItemInteraction(InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
+    public void onItemInteraction(@NonNull InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
         if (event.getCurrentItem() == null || !event.getCurrentItem().hasItemMeta()) {
             return;
         }
@@ -97,7 +98,7 @@ public class RecordingsMenu extends MultiMenu {
      * @param recording The recording to be represented.
      * @return An ItemStack representing the recording.
      */
-    private ItemStack createRecordingItem(Recording recording) {
+    private ItemStack createRecordingItem(@NonNull Recording recording) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
         String startDate = formatter.format(new Date(recording.getStartTime()));
         String endDate = formatter.format(new Date(recording.getEndTime()));

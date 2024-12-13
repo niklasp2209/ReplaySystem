@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,7 @@ public class Region {
      * @param corner1 The first corner of the region (nullable).
      * @param corner2 The second corner of the region (nullable).
      */
-    public Region(Location corner1, Location corner2) {
+    public Region(@Nullable Location corner1, @Nullable Location corner2) {
         this.corner1 = Optional.ofNullable(corner1);
         this.corner2 = Optional.ofNullable(corner2);
     }
@@ -55,11 +56,11 @@ public class Region {
     /**
      * Determines whether a given location is within the bounds of this region.
      *
-     * @param loc The location to check.
+     * @param location The location to check.
      * @return true if the location is inside the region, false otherwise.
      */
-    public boolean isIn(Location loc) {
-        if (!isSet() || loc == null || !getWorld().orElse(null).equals(loc.getWorld())) {
+    public boolean isIn(@Nullable Location location) {
+        if (!isSet() || location == null || !getWorld().orElse(null).equals(location.getWorld())) {
             return false;
         }
 
@@ -70,9 +71,9 @@ public class Region {
         double zMin = Math.min(corner1.get().getZ(), corner2.get().getZ());
         double zMax = Math.max(corner1.get().getZ(), corner2.get().getZ());
 
-        return loc.getX() >= xMin && loc.getX() <= xMax &&
-                loc.getY() >= yMin && loc.getY() <= yMax &&
-                loc.getZ() >= zMin && loc.getZ() <= zMax;
+        return location.getX() >= xMin && location.getX() <= xMax &&
+                location.getY() >= yMin && location.getY() <= yMax &&
+                location.getZ() >= zMin && location.getZ() <= zMax;
     }
 
     /**
@@ -117,7 +118,7 @@ public class Region {
      * @param world The world in which the blocks are located.
      * @return A list of all blocks within the region. Returns an empty list if the region is not set or the world is null.
      */
-    public List<Block> blockList(World world) {
+    public List<Block> blockList(@Nullable World world) {
         if (!isSet() || world == null) {
             return Collections.emptyList();
         }
@@ -142,7 +143,7 @@ public class Region {
      * @param player The player to check.
      * @return true if the player is inside the region, otherwise false.
      */
-    public boolean isPlayerIn(Player player) {
+    public boolean isPlayerIn(@Nullable Player player) {
         return player != null && isIn(player.getLocation());
     }
 

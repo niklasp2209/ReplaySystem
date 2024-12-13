@@ -5,10 +5,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerCo
 import de.bukkitnews.replay.framework.exception.EntityNotFoundException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
 import java.util.UUID;
@@ -31,7 +28,7 @@ public class ItemPickupRecordable extends Recordable {
      * @throws EntityNotFoundException if the entities for the collector or item are not found in the replay
      */
     @Override
-    public void replay(Replay replay, User user) throws EntityNotFoundException {
+    public void replay(@NonNull Replay replay, @NonNull User user) throws EntityNotFoundException {
         Integer collectorEntityId = replay.getSpawnedEntities().get(collectorBukkitEntityId);
         Integer itemEntityId = replay.getSpawnedEntities().get(itemBukkitEntityId);
 

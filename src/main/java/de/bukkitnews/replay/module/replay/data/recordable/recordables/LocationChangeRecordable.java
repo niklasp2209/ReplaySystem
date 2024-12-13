@@ -7,10 +7,7 @@ import de.bukkitnews.replay.framework.exception.EntityNotFoundException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bukkit.Location;
 
@@ -35,7 +32,7 @@ public class LocationChangeRecordable extends Recordable {
      * @throws EntityNotFoundException if the entity with the given bukkitEntityId is not found
      */
     @Override
-    public void replay(Replay replay, User user) throws EntityNotFoundException {
+    public void replay(@NonNull Replay replay, @NonNull User user) throws EntityNotFoundException {
         Integer entityId = replay.getSpawnedEntities().get(bukkitEntityId);
         if (entityId == null) {
             throw new EntityNotFoundException("Entity with the given bukkitEntityId not found in replay.");

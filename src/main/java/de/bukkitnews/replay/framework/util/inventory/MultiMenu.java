@@ -2,6 +2,7 @@ package de.bukkitnews.replay.framework.util.inventory;
 
 import de.bukkitnews.replay.framework.util.ItemUtil;
 import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -12,10 +13,8 @@ import java.util.List;
 
 public abstract class MultiMenu extends Menu {
 
-    // The list of items being paginated
     protected List<Object> data;
 
-    // Current page index (starts at 0)
     protected int page = 0;
 
     /**
@@ -23,11 +22,10 @@ public abstract class MultiMenu extends Menu {
      *
      * @return The maximum number of items displayed per page.
      */
-    // Maximum items displayed per page, considering border slots
     @Getter
     protected final int maxItemsPerPage = 28;
 
-    public MultiMenu(MenuUtil menuUtil) {
+    public MultiMenu(@NonNull MenuUtil menuUtil) {
         super(menuUtil);
     }
 

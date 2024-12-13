@@ -12,11 +12,13 @@ import de.bukkitnews.replay.module.database.mongodb.codec.EntityTypeCodec;
 import de.bukkitnews.replay.module.database.mongodb.codec.ItemStackCodec;
 import de.bukkitnews.replay.module.database.mongodb.codec.LocationCodec;
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.*;
+import lombok.NonNull;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -33,7 +35,7 @@ public class MongoConnectionManager {
      *
      * @param configManager the configuration file containing MongoDB settings
      */
-    public MongoConnectionManager(ConfigManager configManager) {
+    public MongoConnectionManager(@NonNull ConfigManager configManager) {
         Objects.requireNonNull(configManager, "ConfigManager must not be null");
 
         // Retrieve configuration values
@@ -105,7 +107,7 @@ public class MongoConnectionManager {
      * @param key    the key to retrieve
      * @return the configuration value
      */
-    private String requireConfigValue(FileConfiguration config, String key) {
+    private String requireConfigValue(@Nullable FileConfiguration config, @NonNull String key) {
         return Objects.requireNonNull(config.getString(key), "Missing required configuration: " + key);
     }
 }

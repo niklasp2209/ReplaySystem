@@ -5,6 +5,7 @@ import de.bukkitnews.replay.framework.exception.MenuManagerNotSetupException;
 import de.bukkitnews.replay.framework.util.inventory.Menu;
 import de.bukkitnews.replay.framework.util.inventory.MenuListener;
 import de.bukkitnews.replay.framework.util.inventory.MenuUtil;
+import lombok.NonNull;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -26,7 +27,7 @@ public class InventoryUtil {
      * @param server The server instance.
      * @param plugin The plugin instance.
      */
-    private static void registerMenuListener(Server server, Plugin plugin) {
+    private static void registerMenuListener(@NonNull Server server, @NonNull Plugin plugin) {
         boolean listenerAlreadyRegistered = false;
 
         for (RegisteredListener registeredListener : InventoryClickEvent.getHandlerList().getRegisteredListeners()) {
@@ -48,7 +49,7 @@ public class InventoryUtil {
      * @param server The server instance.
      * @param plugin The plugin using this API.
      */
-    public static void setup(Server server, Plugin plugin) {
+    public static void setup(@NonNull Server server, @NonNull Plugin plugin) {
         if (!isInitialized) {
             registerMenuListener(server, plugin);
             isInitialized = true;
@@ -63,7 +64,7 @@ public class InventoryUtil {
      * @throws MenuManagerException         If the menu cannot be instantiated or an error occurs during creation.
      * @throws MenuManagerNotSetupException If the MenuManager has not been properly initialized.
      */
-    public static void openMenu(Class<? extends Menu> menuClass, Player player) throws MenuManagerException, MenuManagerNotSetupException {
+    public static void openMenu(@NonNull Class<? extends Menu> menuClass, @NonNull Player player) throws MenuManagerException, MenuManagerNotSetupException {
         if (!isInitialized) {
             throw new MenuManagerNotSetupException("InventoryUtil.setup() has not been called.");
         }
@@ -84,7 +85,7 @@ public class InventoryUtil {
      * @return The PlayerMenuUtility associated with the player.
      * @throws MenuManagerNotSetupException If the MenuManager has not been properly initialized.
      */
-    public static MenuUtil getPlayerMenuUtility(Player player) throws MenuManagerNotSetupException {
+    public static MenuUtil getPlayerMenuUtility(@NonNull Player player) throws MenuManagerNotSetupException {
         if (!isInitialized) {
             throw new MenuManagerNotSetupException("InventoryUtil.setup() has not been called.");
         }

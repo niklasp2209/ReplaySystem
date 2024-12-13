@@ -1,6 +1,7 @@
 name: ReplaySystem
 version: '${project.version}'
 main: de.bukkitnews.replay.ReplaySystem
+author: BukkitNews
 api-version: 1.21
 depend:
   - packetevents

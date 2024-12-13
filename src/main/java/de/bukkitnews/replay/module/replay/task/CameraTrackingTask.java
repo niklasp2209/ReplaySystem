@@ -3,6 +3,7 @@ package de.bukkitnews.replay.module.replay.task;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.SpawnEntityRecordable;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
+import lombok.NonNull;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -15,7 +16,7 @@ public class CameraTrackingTask implements Runnable {
 
     private final ActiveRecording activeRecording;
 
-    public CameraTrackingTask(ActiveRecording activeRecording) {
+    public CameraTrackingTask(@NonNull ActiveRecording activeRecording) {
         this.activeRecording = activeRecording;
     }
 
@@ -29,7 +30,7 @@ public class CameraTrackingTask implements Runnable {
         Location corner1 = activeRecording.getRecordingArea().getCorner1();
         Location corner2 = activeRecording.getRecordingArea().getCorner2();
 
-        var loadedChunks = corner1.getWorld().getLoadedChunks();
+        Chunk[] loadedChunks = corner1.getWorld().getLoadedChunks();
         List<Chunk> chunksInRegion = new ArrayList<>();
 
         int chunkX1 = corner1.getBlockX() >> 4;
@@ -42,16 +43,16 @@ public class CameraTrackingTask implements Runnable {
         int minZ = Math.min(chunkZ1, chunkZ2);
         int maxZ = Math.max(chunkZ1, chunkZ2);
 
-        for (var chunk : loadedChunks) {
+        for (Chunk chunk : loadedChunks) {
             if (chunk.getX() >= minX && chunk.getX() <= maxX &&
                     chunk.getZ() >= minZ && chunk.getZ() <= maxZ) {
                 chunksInRegion.add(chunk);
             }
         }
 
-        for (var chunk : chunksInRegion) {
-            var entities = chunk.getEntities();
-            for (var entity : entities) {
+        for (Chunk chunk : chunksInRegion) {
+            Entity[] entities = chunk.getEntities();
+            for (Entity entity : entities) {
                 if (!activeRecording.getRecordingArea().isInRegion(entity.getLocation())) {
                     continue;
                 }

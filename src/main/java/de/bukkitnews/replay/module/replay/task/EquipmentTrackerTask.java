@@ -3,6 +3,7 @@ package de.bukkitnews.replay.module.replay.task;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.SetEquipmentRecordable;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -14,7 +15,7 @@ public class EquipmentTrackerTask implements Runnable {
 
     private final ActiveRecording activeRecording;
 
-    public EquipmentTrackerTask(ActiveRecording activeRecording) {
+    public EquipmentTrackerTask(@NonNull ActiveRecording activeRecording) {
         this.activeRecording = activeRecording;
     }
 
