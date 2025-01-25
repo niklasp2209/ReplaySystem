@@ -9,6 +9,7 @@ import org.bukkit.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Data
@@ -18,8 +19,8 @@ public class RecordingArea {
     private ObjectId id;
     private String name;
     private UUID owner;
-    private Location corner1;
-    private Location corner2;
+    private Optional<Location> corner1 = Optional.empty();
+    private Optional<Location> corner2 = Optional.empty();
 
     public RecordingArea(String name, UUID owner) {
         this.name = name;
@@ -33,12 +34,19 @@ public class RecordingArea {
      * @return true if the location is within the region, false otherwise.
      */
     public boolean isInRegion(Location location) {
-        double x1 = corner1.getX();
-        double x2 = corner2.getX();
-        double y1 = corner1.getY();
-        double y2 = corner2.getY();
-        double z1 = corner1.getZ();
-        double z2 = corner2.getZ();
+        if (!corner1.isPresent() || !corner2.isPresent()) {
+            return false;
+        }
+
+        Location corner1Location = corner1.get();
+        Location corner2Location = corner2.get();
+
+        double x1 = corner1Location.getX();
+        double x2 = corner2Location.getX();
+        double y1 = corner1Location.getY();
+        double y2 = corner2Location.getY();
+        double z1 = corner1Location.getZ();
+        double z2 = corner2Location.getZ();
         double x = location.getX();
         double y = location.getY();
         double z = location.getZ();
@@ -55,20 +63,24 @@ public class RecordingArea {
      */
     public List<Material> getMaterialsInRegion() {
         List<Material> materials = new ArrayList<>();
-        World world = corner1.getWorld();
 
-        if (!corner1.getWorld().equals(corner2.getWorld())) {
+        if (!corner1.isPresent() || !corner2.isPresent()) {
+            throw new IllegalArgumentException("Both corners must be set");
+        }
+
+        World world = corner1.get().getWorld();
+        if (!corner1.get().getWorld().equals(corner2.get().getWorld())) {
             throw new IllegalArgumentException("Locations must be in the same world");
         }
 
-        int startX = Math.min(corner1.getBlockX(), corner2.getBlockX());
-        int endX = Math.max(corner1.getBlockX(), corner2.getBlockX());
+        int startX = Math.min(corner1.get().getBlockX(), corner2.get().getBlockX());
+        int endX = Math.max(corner1.get().getBlockX(), corner2.get().getBlockX());
 
-        int startY = Math.min(corner1.getBlockY(), corner2.getBlockY());
-        int endY = Math.max(corner1.getBlockY(), corner2.getBlockY());
+        int startY = Math.min(corner1.get().getBlockY(), corner2.get().getBlockY());
+        int endY = Math.max(corner1.get().getBlockY(), corner2.get().getBlockY());
 
-        int startZ = Math.min(corner1.getBlockZ(), corner2.getBlockZ());
-        int endZ = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
+        int startZ = Math.min(corner1.get().getBlockZ(), corner2.get().getBlockZ());
+        int endZ = Math.max(corner1.get().getBlockZ(), corner2.get().getBlockZ());
 
         for (int x = startX; x <= endX; x++) {
             for (int y = startY; y <= endY; y++) {

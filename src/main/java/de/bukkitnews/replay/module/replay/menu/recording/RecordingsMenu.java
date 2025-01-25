@@ -1,7 +1,5 @@
 package de.bukkitnews.replay.module.replay.menu.recording;
 
-import de.bukkitnews.replay.exception.MenuManagerException;
-import de.bukkitnews.replay.exception.MenuManagerNotSetupException;
 import de.bukkitnews.replay.module.replay.util.ItemUtil;
 import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.menu.MenuUtil;
@@ -58,7 +56,7 @@ public class RecordingsMenu extends MultiMenu {
     }
 
     @Override
-    public void onItemInteraction(@NotNull InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
+    public void onItemInteraction(@NotNull InventoryClickEvent event) {
         if (event.getCurrentItem() == null || !event.getCurrentItem().hasItemMeta()) {
             return;
         }

@@ -1,9 +1,10 @@
 package de.bukkitnews.replay.exception;
 
-import lombok.NonNull;
+
+import org.jetbrains.annotations.NotNull;
 
 public class EntityNotFoundException extends Exception {
-    public EntityNotFoundException(@NonNull String message) {
+    public EntityNotFoundException(@NotNull String message) {
         super(message);
     }
 }

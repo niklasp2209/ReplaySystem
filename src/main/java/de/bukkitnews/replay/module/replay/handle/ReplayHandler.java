@@ -7,6 +7,7 @@ import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities;
+import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.recording.Recording;
@@ -29,11 +30,16 @@ import java.util.Set;
 
 public class ReplayHandler {
 
-    @NonNull private final RecordableRepository recordableRepository;
-    @NonNull private final CameraRepository cameraRepository;
-    @NonNull private final Set<Replay> replays = new HashSet<>();
+    @NonNull
+    private final RecordableRepository recordableRepository;
+    @NonNull
+    private final CameraRepository cameraRepository;
+    @NonNull
+    private final Set<Replay> replays = new HashSet<>();
+    private final ReplayModule replayModule;
 
-    public ReplayHandler(@NonNull RecordableRepository recordableRepository, @NonNull CameraRepository cameraRepository) {
+    public ReplayHandler(ReplayModule replayModule, @NonNull RecordableRepository recordableRepository, @NonNull CameraRepository cameraRepository) {
+        this.replayModule = replayModule;
         this.recordableRepository = recordableRepository;
         this.cameraRepository = cameraRepository;
     }
@@ -57,7 +63,7 @@ public class ReplayHandler {
             return;
         }
 
-        Replay replay = new Replay(recording, player);
+        Replay replay = new Replay(replayModule, recording, player);
         placeOriginalBlocks(replay.getRecording(), replay.getPlayer());
         loadRecordables(replay, 0);
         replays.add(replay);
@@ -138,8 +144,14 @@ public class ReplayHandler {
     private void placeOriginalBlocks(@NonNull Recording recording, @NonNull Player viewer) {
         List<Material> originalBlocks = recording.getOriginalBlocks();
         RecordingArea recordingArea = cameraRepository.findById(recording.getCameraId());
-        Location corner1 = recordingArea.getCorner1();
-        Location corner2 = recordingArea.getCorner2();
+
+        Location corner1 = recordingArea.getCorner1().orElse(null);
+        Location corner2 = recordingArea.getCorner2().orElse(null);
+
+        if (corner1 == null || corner2 == null) {
+            viewer.sendMessage(MessageUtil.getMessage("camera_creation_incomplete"));
+            return;
+        }
 
         if (!corner1.getWorld().equals(corner2.getWorld())) {
             throw new IllegalArgumentException("Locations must be in the same world");
@@ -173,8 +185,14 @@ public class ReplayHandler {
      */
     private void placeActualBlocks(@NonNull Recording recording, @NonNull Player viewer) {
         RecordingArea recordingArea = cameraRepository.findById(recording.getCameraId());
-        Location corner1 = recordingArea.getCorner1();
-        Location corner2 = recordingArea.getCorner2();
+
+        Location corner1 = recordingArea.getCorner1().orElse(null);
+        Location corner2 = recordingArea.getCorner2().orElse(null);
+
+        if (corner1 == null || corner2 == null) {
+            viewer.sendMessage(MessageUtil.getMessage("camera_creation_incomplete"));
+            return;
+        }
         World world = corner1.getWorld();
 
         if (!corner1.getWorld().equals(corner2.getWorld())) {

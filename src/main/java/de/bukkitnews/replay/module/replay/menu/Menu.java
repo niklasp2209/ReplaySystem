@@ -1,7 +1,5 @@
 package de.bukkitnews.replay.module.replay.menu;
 
-import de.bukkitnews.replay.exception.MenuManagerException;
-import de.bukkitnews.replay.exception.MenuManagerNotSetupException;
 import de.bukkitnews.replay.module.replay.util.ItemUtil;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -61,10 +59,8 @@ public abstract class Menu implements InventoryHolder {
      * Handles item interaction in the menu.
      *
      * @param event The click event.
-     * @throws MenuManagerNotSetupException If the menu manager is not properly initialized.
-     * @throws MenuManagerException         For generic menu-related errors.
      */
-    public abstract void onItemInteraction(InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException;
+    public abstract void onItemInteraction(InventoryClickEvent event);
 
     /**
      * Sets up the menu's inventory items.

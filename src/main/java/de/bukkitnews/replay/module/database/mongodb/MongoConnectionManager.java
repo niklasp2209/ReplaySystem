@@ -38,13 +38,11 @@ public class MongoConnectionManager {
     public MongoConnectionManager(@NonNull ConfigManager configManager) {
         Objects.requireNonNull(configManager, "ConfigManager must not be null");
 
-        // Retrieve configuration values
         FileConfiguration fileConfiguration = configManager.getConfig();
         String databaseName = requireConfigValue(fileConfiguration, "mongodb.database");
         String username = requireConfigValue(fileConfiguration, "mongodb.username");
         String password = requireConfigValue(fileConfiguration, "mongodb.password");
 
-        // Build connection string
         String connectionString = String.format("mongodb+srv://%s:%s@%s.kqzly.mongodb.net/?retryWrites=true&w=majority&appName=%s",
                 username, password, databaseName, databaseName);
 
@@ -57,7 +55,6 @@ public class MongoConnectionManager {
                                 SpawnEntityRecordable.class,
                                 DespawnEntityRecordable.class,
                                 LocationChangeRecordable.class,
-                                SneakRecordable.class,
                                 SprintRecordable.class,
                                 SwingHandRecordable.class,
                                 SetEquipmentRecordable.class,

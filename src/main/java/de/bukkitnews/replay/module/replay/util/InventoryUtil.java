@@ -1,7 +1,5 @@
 package de.bukkitnews.replay.module.replay.util;
 
-import de.bukkitnews.replay.exception.MenuManagerException;
-import de.bukkitnews.replay.exception.MenuManagerNotSetupException;
 import de.bukkitnews.replay.module.replay.menu.Menu;
 import de.bukkitnews.replay.module.replay.menu.MenuUtil;
 import lombok.experimental.UtilityClass;
@@ -22,18 +20,17 @@ public class InventoryUtil {
      *
      * @param menuClass The class reference of the Menu to open.
      * @param player    The player for whom the menu will be opened.
-     * @throws MenuManagerException         If the menu cannot be instantiated or an error occurs during creation.
-     * @throws MenuManagerNotSetupException If the MenuManager has not been properly initialized.
      */
-    public static void openMenu(@NotNull Class<? extends Menu> menuClass, @NotNull Player player) throws MenuManagerException, MenuManagerNotSetupException {
+    public static void openMenu(@NotNull Class<? extends Menu> menuClass, @NotNull Player player) {
 
+        Menu menu = null;
         try {
-            Menu menu = menuClass.getConstructor(MenuUtil.class).newInstance(getPlayerMenuUtility(player));
-            menu.open();
+            menu = menuClass.getConstructor(MenuUtil.class).newInstance(getPlayerMenuUtility(player));
         } catch (InstantiationException | IllegalAccessException |
                  InvocationTargetException | NoSuchMethodException e) {
-            throw new MenuManagerException("Failed to create menu: " + menuClass.getName(), e);
+            throw new RuntimeException(e);
         }
+        menu.open();
     }
 
     /**
@@ -41,9 +38,8 @@ public class InventoryUtil {
      *
      * @param player The player whose PlayerMenuUtility is needed.
      * @return The PlayerMenuUtility associated with the player.
-     * @throws MenuManagerNotSetupException If the MenuManager has not been properly initialized.
      */
-    public static MenuUtil getPlayerMenuUtility(@NotNull Player player) throws MenuManagerNotSetupException {
+    public static MenuUtil getPlayerMenuUtility(@NotNull Player player) {
         return playerMenuUtilityMap.computeIfAbsent(player, MenuUtil::new);
     }
 }

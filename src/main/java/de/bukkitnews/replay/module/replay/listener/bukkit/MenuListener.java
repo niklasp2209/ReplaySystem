@@ -1,9 +1,6 @@
 package de.bukkitnews.replay.module.replay.listener.bukkit;
 
-import de.bukkitnews.replay.exception.MenuManagerException;
-import de.bukkitnews.replay.exception.MenuManagerNotSetupException;
 import de.bukkitnews.replay.module.replay.menu.Menu;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -21,22 +18,15 @@ public class MenuListener implements Listener {
     public void onMenuClick(@NotNull InventoryClickEvent event) {
         InventoryHolder holder = event.getInventory().getHolder();
 
-        if (holder instanceof Menu menu) {
-            if (event.getCurrentItem() == null) {
-                return;
-            }
-
-            if (menu.cancelAllInteractions()) {
-                event.setCancelled(true);
-            }
-
-            try {
-                menu.onItemInteraction(event);
-            } catch (MenuManagerNotSetupException e) {
-                System.err.println(ChatColor.RED + "InventoryUtil not initialized.");
-            } catch (MenuManagerException e) {
-                e.printStackTrace();
-            }
+        if (!(holder instanceof Menu menu)) {
+            return;
         }
+
+        if (event.getCurrentItem() == null) {
+            return;
+        }
+
+        event.setCancelled(menu.cancelAllInteractions());
+        menu.onItemInteraction(event);
     }
 }

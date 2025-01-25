@@ -3,7 +3,6 @@ package de.bukkitnews.replay.module.replay.data.recordable.recordables;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityHeadLook;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityTeleport;
-import de.bukkitnews.replay.exception.EntityNotFoundException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
@@ -29,14 +28,10 @@ public class LocationChangeRecordable extends Recordable {
      *
      * @param replay the replay instance handling the replay process
      * @param user the user to whom the packets should be sent
-     * @throws EntityNotFoundException if the entity with the given bukkitEntityId is not found
      */
     @Override
-    public void replay(@NonNull Replay replay, @NonNull User user) throws EntityNotFoundException {
+    public void replay(@NonNull Replay replay, @NonNull User user) {
         Integer entityId = replay.getSpawnedEntities().get(bukkitEntityId);
-        if (entityId == null) {
-            throw new EntityNotFoundException("Entity with the given bukkitEntityId not found in replay.");
-        }
 
         WrapperPlayServerEntityTeleport movePacket = new WrapperPlayServerEntityTeleport(
                 entityId, SpigotConversionUtil.fromBukkitLocation(location), false);

@@ -45,7 +45,7 @@ public class ReplayModule extends CustomModule {
 
         this.cameraHandler = new CameraHandler(this.databaseRepositories.getCameraRepository());
         this.recordingHandler = new RecordingHandler(this.databaseRepositories.getRecordingRepository(), this.databaseRepositories.getRecordableRepository(), this);
-        this.replayHandler = new ReplayHandler(this.databaseRepositories.getRecordableRepository(), this.databaseRepositories.getCameraRepository());
+        this.replayHandler = new ReplayHandler(this, this.databaseRepositories.getRecordableRepository(), this.databaseRepositories.getCameraRepository());
 
         PacketEvents.getAPI().getEventManager()
                 .registerListener(new ReplayPacketListener(this), PacketListenerPriority.NORMAL);
@@ -64,12 +64,12 @@ public class ReplayModule extends CustomModule {
 
     private void initListener(@NonNull PluginManager pluginManager){
         pluginManager.registerEvents(new CameraCreationListener(this), getReplaySystem());
-        pluginManager.registerEvents(new BlockBreakListener(this), getReplaySystem());
-        pluginManager.registerEvents(new BlockPlaceListener(this), getReplaySystem());
-        pluginManager.registerEvents(new DropItemListener(this), getReplaySystem());
-        pluginManager.registerEvents(new EntityDamageListener(this), getReplaySystem());
-        pluginManager.registerEvents(new PickupItemListener(this), getReplaySystem());
-        pluginManager.registerEvents(new PlayerSprintListener(this), getReplaySystem());
+        pluginManager.registerEvents(new BlockBreakListener(recordingHandler), getReplaySystem());
+        pluginManager.registerEvents(new BlockPlaceListener(recordingHandler), getReplaySystem());
+        pluginManager.registerEvents(new DropItemListener(recordingHandler), getReplaySystem());
+        pluginManager.registerEvents(new EntityDamageListener(recordingHandler), getReplaySystem());
+        pluginManager.registerEvents(new PickupItemListener(recordingHandler), getReplaySystem());
+        pluginManager.registerEvents(new PlayerSprintListener(recordingHandler), getReplaySystem());
         pluginManager.registerEvents(new ReplayListener(this.replayHandler), getReplaySystem());
         pluginManager.registerEvents(new MenuListener(), getReplaySystem());
     }

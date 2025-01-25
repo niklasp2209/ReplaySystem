@@ -1,13 +1,14 @@
 package de.bukkitnews.replay.exception;
 
-import lombok.NonNull;
+
+import org.jetbrains.annotations.NotNull;
 
 public class EntityCreationException extends Exception {
-    public EntityCreationException(@NonNull String message) {
+    public EntityCreationException(@NotNull String message) {
         super(message);
     }
 
-    public EntityCreationException(@NonNull String message, @NonNull Throwable cause) {
+    public EntityCreationException(@NotNull String message, @NotNull Throwable cause) {
         super(message, cause);
     }
 }

@@ -40,12 +40,8 @@ public class SetEquipmentRecordable extends Recordable {
      * @throws EntityNotFoundException if the entity with the given bukkitEntityId is not found
      */
     @Override
-    public void replay(@NonNull Replay replay, @NonNull User user) throws EntityNotFoundException {
+    public void replay(@NonNull Replay replay, @NonNull User user)  {
         Integer entityId = replay.getSpawnedEntities().get(bukkitEntityId);
-
-        if (entityId == null) {
-            throw new EntityNotFoundException("Entity with bukkitEntityId " + bukkitEntityId + " not found.");
-        }
 
         List<Equipment> equipment = new ArrayList<>();
         addEquipmentToList(equipment, EquipmentSlot.MAIN_HAND, mainHand);

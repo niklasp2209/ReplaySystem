@@ -1,7 +1,5 @@
 package de.bukkitnews.replay.module.replay.menu.replay;
 
-import de.bukkitnews.replay.exception.MenuManagerException;
-import de.bukkitnews.replay.exception.MenuManagerNotSetupException;
 import de.bukkitnews.replay.module.replay.util.InventoryUtil;
 import de.bukkitnews.replay.module.replay.util.ItemUtil;
 import de.bukkitnews.replay.module.replay.util.MessageUtil;
@@ -25,14 +23,15 @@ import java.util.Optional;
 
 public class ReplayCamerasMenu extends MultiMenu {
 
-    private static final @NotNull NamespacedKey CAMERA_ID_KEY = new NamespacedKey(ReplayModule.instance.getReplaySystem(), "camera_id");
+    private final @NotNull ReplayModule replayModule;
 
-    public ReplayCamerasMenu(@NotNull MenuUtil menuUtil) {
+    public ReplayCamerasMenu(@NotNull ReplayModule replayModule, @NotNull MenuUtil menuUtil) {
         super(menuUtil);
+        this.replayModule = replayModule;
     }
 
     @Override
-    public String getMenuTitle() {
+    public @NotNull String getMenuTitle() {
         return MessageUtil.getMessage("inventory_name");
     }
 
@@ -47,13 +46,15 @@ public class ReplayCamerasMenu extends MultiMenu {
     }
 
     @Override
-    public void onItemInteraction(@NotNull InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
+    public void onItemInteraction(@NotNull InventoryClickEvent event)  {
         if (event.getCurrentItem() == null || !event.getCurrentItem().hasItemMeta()) {
             return;
         }
 
         ItemMeta itemMeta = event.getCurrentItem().getItemMeta();
-        String cameraId = itemMeta.getPersistentDataContainer().get(CAMERA_ID_KEY, PersistentDataType.STRING);
+
+        NamespacedKey cameraIdKey = new NamespacedKey(replayModule.getReplaySystem(), "camera_id");
+        String cameraId = itemMeta.getPersistentDataContainer().get(cameraIdKey, PersistentDataType.STRING);
 
         if (cameraId == null) {
             player.sendMessage(MessageUtil.getMessage("inventory_error1"));
@@ -65,7 +66,7 @@ public class ReplayCamerasMenu extends MultiMenu {
             return;
         }
 
-        Optional<RecordingArea> optionalCamera = ReplayModule.instance.getCameraHandler().findById(cameraId);
+        Optional<RecordingArea> optionalCamera = replayModule.getCameraHandler().findById(cameraId);
         if (optionalCamera.isEmpty()) {
             player.sendMessage(MessageUtil.getMessage("inventory_error2"));
             return;
@@ -83,7 +84,7 @@ public class ReplayCamerasMenu extends MultiMenu {
 
     @Override
     public @NotNull List<ItemStack> dataToItems() {
-        return ReplayModule.instance.getCameraHandler().getCamerasForPlayer(player)
+        return replayModule.getCameraHandler().getCamerasForPlayer(player)
                 .stream()
                 .map(this::createCameraItem)
                 .toList();
@@ -103,7 +104,8 @@ public class ReplayCamerasMenu extends MultiMenu {
 
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
-            itemMeta.getPersistentDataContainer().set(CAMERA_ID_KEY, PersistentDataType.STRING, recordingArea.getId().toString());
+            NamespacedKey cameraIdKey = new NamespacedKey(replayModule.getReplaySystem(), "camera_id");
+            itemMeta.getPersistentDataContainer().set(cameraIdKey, PersistentDataType.STRING, recordingArea.getId().toString());
             itemStack.setItemMeta(itemMeta);
         }
 

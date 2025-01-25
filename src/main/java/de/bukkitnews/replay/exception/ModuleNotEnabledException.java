@@ -1,11 +1,11 @@
 package de.bukkitnews.replay.exception;
 
 import de.bukkitnews.replay.module.CustomModule;
-import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public class ModuleNotEnabledException extends Exception {
 
-    public ModuleNotEnabledException(@NonNull CustomModule customModule){
+    public ModuleNotEnabledException(@NotNull CustomModule customModule){
         super("Module "+customModule.getModuleName()+" is not enabled.");
     }
 }

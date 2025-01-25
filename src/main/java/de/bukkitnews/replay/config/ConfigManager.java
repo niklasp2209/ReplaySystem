@@ -1,20 +1,20 @@
 package de.bukkitnews.replay.config;
 
 import de.bukkitnews.replay.ReplaySystem;
-import lombok.NonNull;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 
 public class ConfigManager {
-    @NonNull private final ReplaySystem replaySystem;
-    @NonNull private final String fileName;
+    private final @NotNull ReplaySystem replaySystem;
+    private final @NotNull String fileName;
     private File configFile;
     private FileConfiguration fileConfiguration;
 
-    public ConfigManager(@NonNull ReplaySystem replaySystem, @NonNull String fileName) {
+    public ConfigManager(@NotNull ReplaySystem replaySystem, @NotNull String fileName) {
         this.replaySystem = replaySystem;
         this.fileName = fileName;
         setup();
@@ -26,22 +26,22 @@ public class ConfigManager {
      * default configuration resource from the plugin's JAR file.
      */
     private void setup() {
-        this.configFile = new File(this.replaySystem.getDataFolder(), this.fileName);
+        this.configFile = new File(replaySystem.getDataFolder(), fileName);
 
-        if (!this.configFile.exists()) {
-            this.replaySystem.getDataFolder().mkdirs();
-            this.replaySystem.saveResource(this.fileName, false);
+        if (!configFile.exists()) {
+            replaySystem.getDataFolder().mkdirs();
+            replaySystem.saveResource(fileName, false);
         }
 
-        this.fileConfiguration = YamlConfiguration.loadConfiguration(this.configFile);
+        this.fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
     }
 
     /**
      * Gets the FileConfiguration object, which provides access to the configuration data.
      * @return The FileConfiguration object containing the loaded configuration data
      */
-    public FileConfiguration getConfig() {
-        return this.fileConfiguration;
+    public @NotNull FileConfiguration getConfig() {
+        return fileConfiguration;
     }
 
     /**
@@ -49,10 +49,9 @@ public class ConfigManager {
      */
     public void save() {
         try {
-            this.fileConfiguration.save(this.configFile);
+            fileConfiguration.save(configFile);
         } catch (IOException e) {
-            // Log an error if saving fails
-            this.replaySystem.getLogger().severe("Could not save config file: " + this.fileName);
+            replaySystem.getLogger().severe("Could not save config file: " + fileName);
             e.printStackTrace();
         }
     }
@@ -61,7 +60,7 @@ public class ConfigManager {
      * Reloads the configuration from the file, refreshing the configuration data.
      */
     public void reload() {
-        this.fileConfiguration = YamlConfiguration.loadConfiguration(this.configFile);
+        fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
     }
 
     /**
@@ -69,6 +68,6 @@ public class ConfigManager {
      * @return true if the configuration file exists, false otherwise
      */
     public boolean configExists() {
-        return this.configFile.exists();
+        return configFile.exists();
     }
 }
