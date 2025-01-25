@@ -5,8 +5,8 @@ import de.bukkitnews.replay.module.replay.data.recordable.recordables.DespawnEnt
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.LocationChangeRecordable;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
-import lombok.NonNull;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.Queue;
@@ -14,10 +14,12 @@ import java.util.UUID;
 
 public class LocationTrackingTask implements Runnable {
 
-    private final ActiveRecording activeRecording;
-    private final RecordingArea recordingArea;
+    private final @NotNull ActiveRecording activeRecording;
+    private final @NotNull RecordingArea recordingArea;
+    private final @NotNull ReplayModule replayModule;
 
-    public LocationTrackingTask(ActiveRecording activeRecording) {
+    public LocationTrackingTask(@NotNull ReplayModule replayModule, @NotNull ActiveRecording activeRecording) {
+        this.replayModule = replayModule;
         this.activeRecording = activeRecording;
         this.recordingArea = activeRecording.getRecordingArea();
     }
@@ -34,15 +36,14 @@ public class LocationTrackingTask implements Runnable {
             recordableEntities.forEach(recordableEntity -> {
                 Optional.ofNullable(Bukkit.getEntity(recordableEntity))
                         .ifPresentOrElse(entity -> {
-                            if (recordingArea.isInRegion(entity.getLocation())) {
-                                LocationChangeRecordable recordable = new LocationChangeRecordable(entity.getLocation(), entity.getUniqueId());
-                                ReplayModule.instance.getRecordingHandler().addRecordable(activeRecording, recordable);
-                            } else {
+                            if (!recordingArea.isInRegion(entity.getLocation())) {
                                 removeEntityFromTracking(recordableEntity);
+                                return;
                             }
-                        }, () -> {
-                            removeEntityFromTracking(recordableEntity);
-                        });
+
+                            LocationChangeRecordable recordable = new LocationChangeRecordable(entity.getLocation(), entity.getUniqueId());
+                            replayModule.getRecordingHandler().addRecordable(activeRecording, recordable);
+                        }, () -> removeEntityFromTracking(recordableEntity));
             });
         }
     }
@@ -53,12 +54,8 @@ public class LocationTrackingTask implements Runnable {
      * @param recordableEntity The UUID of the entity to be removed from tracking.
      */
     private void removeEntityFromTracking(UUID recordableEntity) {
-        System.out.println("REMOVING THE DESPAWNED ENTITY FROM TRACKING");
-
         activeRecording.removeEntityFromTracking(recordableEntity);
-
-
         DespawnEntityRecordable despawnEntityRecordable = new DespawnEntityRecordable(recordableEntity);
-        ReplayModule.instance.getRecordingHandler().addRecordable(activeRecording, despawnEntityRecordable);
+        replayModule.getRecordingHandler().addRecordable(activeRecording, despawnEntityRecordable);
     }
 }

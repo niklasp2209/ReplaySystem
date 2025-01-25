@@ -11,13 +11,13 @@ import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.menu.recording.RecordingsMenu;
 import jline.internal.Nullable;
-import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +25,9 @@ import java.util.Optional;
 
 public class ReplayCamerasMenu extends MultiMenu {
 
-    @NonNull private static final NamespacedKey CAMERA_ID_KEY = new NamespacedKey(ReplayModule.instance.getReplaySystem(), "camera_id");
+    private static final @NotNull NamespacedKey CAMERA_ID_KEY = new NamespacedKey(ReplayModule.instance.getReplaySystem(), "camera_id");
 
-    public ReplayCamerasMenu(@NonNull MenuUtil menuUtil) {
+    public ReplayCamerasMenu(@NotNull MenuUtil menuUtil) {
         super(menuUtil);
     }
 
@@ -47,7 +47,7 @@ public class ReplayCamerasMenu extends MultiMenu {
     }
 
     @Override
-    public void onItemInteraction(@NonNull InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
+    public void onItemInteraction(@NotNull InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
         if (event.getCurrentItem() == null || !event.getCurrentItem().hasItemMeta()) {
             return;
         }
@@ -66,14 +66,12 @@ public class ReplayCamerasMenu extends MultiMenu {
         }
 
         Optional<RecordingArea> optionalCamera = ReplayModule.instance.getCameraHandler().findById(cameraId);
-
         if (optionalCamera.isEmpty()) {
             player.sendMessage(MessageUtil.getMessage("inventory_error2"));
             return;
         }
 
         RecordingArea recordingArea = optionalCamera.get();
-
         if (event.isLeftClick()) {
             menuUtil.setData("camera", recordingArea);
             InventoryUtil.openMenu(RecordingsMenu.class, player);
@@ -84,10 +82,10 @@ public class ReplayCamerasMenu extends MultiMenu {
 
 
     @Override
-    public List<ItemStack> dataToItems() {
+    public @NotNull List<ItemStack> dataToItems() {
         return ReplayModule.instance.getCameraHandler().getCamerasForPlayer(player)
                 .stream()
-                .map(camera -> createCameraItem(camera))
+                .map(this::createCameraItem)
                 .toList();
     }
 
@@ -97,7 +95,7 @@ public class ReplayCamerasMenu extends MultiMenu {
      * @param recordingArea The camera to be represented.
      * @return An ItemStack representing the camera.
      */
-    private ItemStack createCameraItem(@NonNull RecordingArea recordingArea) {
+    private @NotNull ItemStack createCameraItem(@NotNull RecordingArea recordingArea) {
         ItemStack itemStack = new ItemUtil(Material.ENDER_EYE)
                 .setDisplayname(recordingArea.getName())
                 .setLore(" ", MessageUtil.getMessage("item_replays_lore1"), MessageUtil.getMessage("item_replays_lore2"))

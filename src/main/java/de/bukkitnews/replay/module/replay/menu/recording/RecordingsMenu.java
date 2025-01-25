@@ -11,13 +11,13 @@ import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.data.recording.Recording;
 import de.bukkitnews.replay.module.replay.handle.RecordingHandler;
 import de.bukkitnews.replay.module.replay.handle.ReplayHandler;
-import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
@@ -27,22 +27,23 @@ import java.util.List;
 
 public class RecordingsMenu extends MultiMenu {
 
-    @NonNull private static final NamespacedKey RECORDING_ID_KEY = new NamespacedKey(ReplayModule.instance.getReplaySystem(), "recordingId");
+    private final @NotNull RecordingHandler recordingHandler;
+    private final @NotNull ReplayHandler replayHandler;
+    private final @NotNull RecordingArea recordingArea;
 
-    @NonNull private final RecordingHandler recordingHandler;
-    @NonNull private final ReplayHandler replayHandler;
-    @NonNull private final RecordingArea recordingArea;
+    private final @NotNull ReplayModule replayModule;
 
-    public RecordingsMenu(@NonNull MenuUtil menuUtil) {
+    public RecordingsMenu(@NotNull ReplayModule replayModule, @NotNull MenuUtil menuUtil) {
         super(menuUtil);
 
-        this.recordingHandler = ReplayModule.instance.getRecordingHandler();
-        this.replayHandler = ReplayModule.instance.getReplayHandler();
+        this.replayModule = replayModule;
+        this.recordingHandler = replayModule.getRecordingHandler();
+        this.replayHandler = replayModule.getReplayHandler();
         this.recordingArea = menuUtil.getData("camera", RecordingArea.class);
     }
 
     @Override
-    public String getMenuTitle() {
+    public @NotNull String getMenuTitle() {
         return "Recordings from: " + recordingArea.getName();
     }
 
@@ -57,13 +58,14 @@ public class RecordingsMenu extends MultiMenu {
     }
 
     @Override
-    public void onItemInteraction(@NonNull InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
+    public void onItemInteraction(@NotNull InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
         if (event.getCurrentItem() == null || !event.getCurrentItem().hasItemMeta()) {
             return;
         }
 
         ItemMeta itemMeta = event.getCurrentItem().getItemMeta();
-        String recordingId = itemMeta.getPersistentDataContainer().get(RECORDING_ID_KEY, PersistentDataType.STRING);
+        NamespacedKey recordingIdKey = new NamespacedKey(replayModule.getReplaySystem(), "recordingId");
+        String recordingId = itemMeta.getPersistentDataContainer().get(recordingIdKey, PersistentDataType.STRING);
 
         if (recordingId == null) {
             return;
@@ -86,9 +88,9 @@ public class RecordingsMenu extends MultiMenu {
     }
 
     @Override
-    public List<ItemStack> dataToItems() {
+    public @NotNull List<ItemStack> dataToItems() {
         return this.recordingHandler.getRecordingsForCamera(recordingArea).stream()
-                .map(recording -> createRecordingItem(recording))
+                .map(this::createRecordingItem)
                 .toList();
     }
 
@@ -98,10 +100,9 @@ public class RecordingsMenu extends MultiMenu {
      * @param recording The recording to be represented.
      * @return An ItemStack representing the recording.
      */
-    private ItemStack createRecordingItem(@NonNull Recording recording) {
+    private @NotNull ItemStack createRecordingItem(@NotNull Recording recording) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
         String startDate = formatter.format(new Date(recording.getStartTime()));
-        String endDate = formatter.format(new Date(recording.getEndTime()));
 
         long duration = (recording.getEndTime() - recording.getStartTime()) / 1000;
         String durationString = formatDuration(duration);
@@ -116,7 +117,8 @@ public class RecordingsMenu extends MultiMenu {
                 .build();
 
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.getPersistentDataContainer().set(RECORDING_ID_KEY, PersistentDataType.STRING, recording.getId().toString());
+        NamespacedKey recordingIdKey = new NamespacedKey(replayModule.getReplaySystem(), "recordingId");
+        itemMeta.getPersistentDataContainer().set(recordingIdKey, PersistentDataType.STRING, recording.getId().toString());
         itemStack.setItemMeta(itemMeta);
 
         return itemStack;
@@ -128,7 +130,7 @@ public class RecordingsMenu extends MultiMenu {
      * @param duration The duration in seconds.
      * @return A formatted string representing the duration.
      */
-    private String formatDuration(long duration) {
+    private @NotNull String formatDuration(long duration) {
         long hours = duration / 3600;
         long minutes = (duration % 3600) / 60;
         long seconds = duration % 60;

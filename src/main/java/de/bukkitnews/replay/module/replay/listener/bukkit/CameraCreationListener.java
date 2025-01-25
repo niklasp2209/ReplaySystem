@@ -1,4 +1,4 @@
-package de.bukkitnews.replay.module.replay.listener;
+package de.bukkitnews.replay.module.replay.listener.bukkit;
 
 import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.region.RegionUtil;
@@ -16,15 +16,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 public class CameraCreationListener implements Listener {
 
-    @NonNull private final CameraHandler cameraHandler;
+    private final CameraHandler cameraHandler;
 
-    public CameraCreationListener() {
-        this.cameraHandler = ReplayModule.instance.getCameraHandler();
+    public CameraCreationListener(@NotNull ReplayModule replayModule) {
+        this.cameraHandler = replayModule.getCameraHandler();
     }
 
     /**

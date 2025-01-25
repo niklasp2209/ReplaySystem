@@ -3,6 +3,7 @@ package de.bukkitnews.replay.module.replay.menu;
 import de.bukkitnews.replay.exception.MenuManagerException;
 import de.bukkitnews.replay.exception.MenuManagerNotSetupException;
 import de.bukkitnews.replay.module.replay.util.ItemUtil;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -18,6 +19,8 @@ public abstract class Menu implements InventoryHolder {
 
     protected final @NotNull MenuUtil menuUtil;
     protected final @NotNull Player player;
+
+    @Getter
     protected @Nullable Inventory inventory;
 
     public static final ItemStack FILLER_ITEM = new ItemUtil(Material.BLACK_STAINED_GLASS_PANE).build();

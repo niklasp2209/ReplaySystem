@@ -1,20 +1,18 @@
 package de.bukkitnews.replay.module.replay.menu.recording;
 
-import de.bukkitnews.replay.exception.MenuManagerException;
-import de.bukkitnews.replay.exception.MenuManagerNotSetupException;
 import de.bukkitnews.replay.module.replay.util.ItemUtil;
 import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.menu.MenuUtil;
 import de.bukkitnews.replay.module.replay.menu.MultiMenu;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
-import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -23,15 +21,17 @@ import java.util.Optional;
 
 public class RecordCamerasMenu extends MultiMenu {
 
-    @NonNull private final NamespacedKey cameraIdKey;
+    private final @NotNull NamespacedKey cameraIdKey;
+    private final @NotNull ReplayModule replayModule;
 
-    public RecordCamerasMenu(MenuUtil menuUtil) {
+    public RecordCamerasMenu(@NotNull ReplayModule replayModule, @NotNull MenuUtil menuUtil) {
         super(menuUtil);
-        cameraIdKey = new NamespacedKey(ReplayModule.instance.getReplaySystem(), "camera_id");
+        this.replayModule = replayModule;
+        cameraIdKey = new NamespacedKey(replayModule.getReplaySystem(), "camera_id");
     }
 
     @Override
-    public String getMenuTitle() {
+    public @NotNull String getMenuTitle() {
         return MessageUtil.getMessage("inventory_name");
     }
 
@@ -49,11 +49,9 @@ public class RecordCamerasMenu extends MultiMenu {
      * Handles player interaction with items in the camera selection menu.
      *
      * @param event The InventoryClickEvent that is triggered when a player clicks on an item.
-     * @throws MenuManagerNotSetupException If the menu manager is not properly set up.
-     * @throws MenuManagerException If an error occurs during the interaction.
      */
     @Override
-    public void onItemInteraction(@NonNull InventoryClickEvent event) throws MenuManagerNotSetupException, MenuManagerException {
+    public void onItemInteraction(@NotNull InventoryClickEvent event) {
         ItemStack clickedItem = event.getCurrentItem();
 
         if (clickedItem == null || !clickedItem.hasItemMeta()) {
@@ -69,8 +67,7 @@ public class RecordCamerasMenu extends MultiMenu {
         }
 
         if (clickedItem.getType() == Material.ENDER_EYE && cameraId != null) {
-            Optional<RecordingArea> optionalCamera = ReplayModule.instance.getCameraHandler().findById(cameraId);
-
+            Optional<RecordingArea> optionalCamera = replayModule.getCameraHandler().findById(cameraId);
             optionalCamera.ifPresentOrElse(camera -> handleCameraInteraction(event, camera),
                     () -> player.sendMessage(MessageUtil.getMessage("inventory_error1")));
         }
@@ -80,12 +77,12 @@ public class RecordCamerasMenu extends MultiMenu {
     /**
      * Handles camera interaction based on the player's click type.
      *
-     * @param event The InventoryClickEvent triggered by the player.
+     * @param event         The InventoryClickEvent triggered by the player.
      * @param recordingArea The camera object the player interacted with.
      */
-    private void handleCameraInteraction(@NonNull InventoryClickEvent event, @NonNull RecordingArea recordingArea) {
+    private void handleCameraInteraction(@NotNull InventoryClickEvent event, @NotNull RecordingArea recordingArea) {
         if (event.isLeftClick()) {
-            ReplayModule.instance.getRecordingHandler().startRecording(player, recordingArea);
+            replayModule.getRecordingHandler().startRecording(player, recordingArea);
             player.closeInventory();
         } else if (event.isRightClick()) {
             // TODO: Add teleportation logic to the camera location
@@ -98,8 +95,8 @@ public class RecordCamerasMenu extends MultiMenu {
      * @return A list of ItemStacks representing the cameras.
      */
     @Override
-    public List<ItemStack> dataToItems() {
-        return ReplayModule.instance.getCameraHandler().getCamerasForPlayer(player)
+    public @NotNull List<ItemStack> dataToItems() {
+        return replayModule.getCameraHandler().getCamerasForPlayer(player)
                 .stream()
                 .map(this::createCameraItem)
                 .toList();
@@ -111,15 +108,17 @@ public class RecordCamerasMenu extends MultiMenu {
      * @param recordingArea The camera to be represented by the ItemStack.
      * @return An ItemStack representing the camera.
      */
-    private ItemStack createCameraItem(@NonNull RecordingArea recordingArea) {
+    private @NotNull ItemStack createCameraItem(@NotNull RecordingArea recordingArea) {
         ItemStack itemStack = new ItemUtil(Material.ENDER_EYE)
                 .setDisplayname(recordingArea.getName())
                 .setLore(" ", MessageUtil.getMessage("item_replays_lore1"), MessageUtil.getMessage("item_replays_lore2"))
                 .build();
 
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.getPersistentDataContainer().set(cameraIdKey, PersistentDataType.STRING, recordingArea.getId().toString());
-        itemStack.setItemMeta(itemMeta);
+        if (itemMeta != null) {
+            itemMeta.getPersistentDataContainer().set(cameraIdKey, PersistentDataType.STRING, recordingArea.getId().toString());
+            itemStack.setItemMeta(itemMeta);
+        }
 
         return itemStack;
     }

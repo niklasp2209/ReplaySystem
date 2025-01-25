@@ -9,20 +9,21 @@ import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import de.bukkitnews.replay.module.replay.handle.ReplayHandler;
 import lombok.NonNull;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 public class ReplayTask extends BukkitRunnable {
 
-    @NonNull private final Replay replay;
-    @NonNull private final ReplayHandler replayHandler;
+    private final @NotNull Replay replay;
+    private final @NotNull ReplayHandler replayHandler;
     private long currentTick = 0;
-    @NonNull private final User user;
+    private final @NotNull User user;
     private boolean paused = true;
 
-    public ReplayTask(@NonNull Replay replay) {
+    public ReplayTask(@NotNull ReplayModule replayModule, @NotNull Replay replay) {
         this.replay = replay;
-        this.replayHandler = ReplayModule.instance.getReplayHandler();
+        this.replayHandler = replayModule.getReplayHandler();
         this.user = PacketEvents.getAPI().getPlayerManager().getUser(replay.getPlayer());
     }
 
@@ -46,28 +47,13 @@ public class ReplayTask extends BukkitRunnable {
             replayHandler.loadRecordables(replay, nextTick);
         }
 
-        if (replay.getRecordableQueue().isEmpty()) {
-            System.out.println("Replay is buffering");
-            return;
-        }
-
         replay.getPlayer().setExp((float) currentTick / replay.getRecording().getTickDuration());
-
-        Optional.ofNullable(replay.getRecordableQueue().poll())
-                .ifPresentOrElse(
-                        tickRecordables -> {
-                            try {
-                                for (Recordable recordable : tickRecordables) {
-                                    System.out.println("Replaying: " + recordable.getClass().getName());
-                                    recordable.replay(replay, user);
-                                }
-                            } catch (Exception exception) {
-                                System.out.println("Tick: " + currentTick);
-                                exception.printStackTrace();
-                            }
-                        },
-                        () -> System.out.println("No recordables for tick " + currentTick)
-                );
+        Optional.ofNullable(replay.getRecordableQueue().poll()).ifPresentOrElse(tickRecordables -> {
+                    tickRecordables.forEach(recordable -> {
+                        recordable.replay(replay, user);
+                    });
+                }, () -> System.out.println("No recordables for tick " + currentTick)
+        );
 
         currentTick++;
     }
@@ -77,7 +63,7 @@ public class ReplayTask extends BukkitRunnable {
      */
     public void restart() {
         this.paused = true;
-        currentTick = 0L;
+        this.currentTick = 0L;
     }
 
     /**

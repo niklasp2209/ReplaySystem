@@ -3,7 +3,6 @@ package de.bukkitnews.replay.module.replay.data.recordable;
 import com.github.retrooper.packetevents.protocol.player.User;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.types.ObjectId;
@@ -23,5 +22,5 @@ public abstract class Recordable {
      * @param replay The replay instance to use.
      * @param user   The user for whom the replay will be played.
      */
-    public abstract void replay(Replay replay, User user) throws Exception;
+    public abstract void replay(Replay replay, User user);
 }

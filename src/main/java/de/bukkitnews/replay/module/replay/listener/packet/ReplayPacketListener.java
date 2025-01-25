@@ -1,4 +1,4 @@
-package de.bukkitnews.replay.module.replay.listener;
+package de.bukkitnews.replay.module.replay.listener.packet;
 
 import com.github.retrooper.packetevents.event.PacketListener;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
@@ -9,12 +9,17 @@ import de.bukkitnews.replay.module.replay.data.recordable.recordables.SetEquipme
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.SwingHandRecordable;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class ReplayPacketHandler implements PacketListener {
+@RequiredArgsConstructor
+public class ReplayPacketListener implements PacketListener {
+
+    private final @NotNull ReplayModule replayModule;
 
     /**
      * Handles the reception of player packets to record relevant actions.
@@ -25,7 +30,7 @@ public class ReplayPacketHandler implements PacketListener {
     public void onPacketReceive(@NonNull PacketReceiveEvent event) {
         Player player = (Player) event.getPlayer();
 
-        Optional<ActiveRecording> activeRecordingOpt = ReplayModule.instance.getRecordingHandler().getPlayerActiveRecording(player);
+        Optional<ActiveRecording> activeRecordingOpt = replayModule.getRecordingHandler().getPlayerActiveRecording(player);
 
         if (activeRecordingOpt.isEmpty()) {
             return;
@@ -36,7 +41,7 @@ public class ReplayPacketHandler implements PacketListener {
         if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
             WrapperPlayClientAnimation playClientAnimation = new WrapperPlayClientAnimation(event);
             SwingHandRecordable swingHandRecordable = new SwingHandRecordable(player.getUniqueId(), playClientAnimation.getHand().getId());
-            ReplayModule.instance.getRecordingHandler().addRecordable(activeRecording, swingHandRecordable);
+            replayModule.getRecordingHandler().addRecordable(activeRecording, swingHandRecordable);
         }
         else if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) {
             if (player.getEquipment() == null) {
@@ -52,7 +57,7 @@ public class ReplayPacketHandler implements PacketListener {
 
             SetEquipmentRecordable setEquipmentRecordable = new SetEquipmentRecordable(
                     player.getUniqueId(), mainHand, offHand, helmet, chestplate, leggings, boots);
-            ReplayModule.instance.getRecordingHandler().addRecordable(activeRecording, setEquipmentRecordable);
+            replayModule.getRecordingHandler().addRecordable(activeRecording, setEquipmentRecordable);
         }
     }
 

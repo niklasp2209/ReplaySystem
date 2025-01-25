@@ -7,9 +7,11 @@ import de.bukkitnews.replay.module.replay.task.EquipmentTrackerTask;
 import de.bukkitnews.replay.module.replay.task.LocationTrackingTask;
 import de.bukkitnews.replay.module.replay.task.TickTrackerTask;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Queue;
 import java.util.UUID;
@@ -26,6 +28,7 @@ public class ActiveRecording {
     private BukkitTask trackEquipmentTask;
     private Queue<Recordable> recordableBuffer = new ConcurrentLinkedQueue<>();
     private volatile boolean isProcessingBuffer = false;
+    private final @NotNull ReplayModule replayModule;
 
     /**
      * Creates a new active recording for the given camera and owner.
@@ -33,29 +36,30 @@ public class ActiveRecording {
      * @param recordingArea The camera being used for recording.
      * @param owner  The player who owns this recording.
      */
-    public ActiveRecording(RecordingArea recordingArea, Player owner) {
+    public ActiveRecording(@NotNull ReplayModule replayModule, RecordingArea recordingArea, Player owner) {
+        this.replayModule = replayModule;
         this.recording = new Recording(recordingArea, owner);
         this.recordingArea = recordingArea;
         this.recording.setOriginalBlocks(this.recordingArea.getMaterialsInRegion());
         this.recordableEntities = new ConcurrentLinkedQueue<>();
 
         this.scanEntitiesTask = Bukkit.getScheduler().runTaskTimer(
-                ReplayModule.instance.getReplaySystem(),
-                new CameraTrackingTask(this),
+                replayModule.getReplaySystem(),
+                new CameraTrackingTask(this, replayModule),
                 0L,
                 20L
         );
 
         this.trackLocationTask = Bukkit.getScheduler().runTaskTimer(
-                ReplayModule.instance.getReplaySystem(),
-                new LocationTrackingTask(this),
+                replayModule.getReplaySystem(),
+                new LocationTrackingTask(replayModule, this),
                 0L,
                 1L
         );
 
         this.trackEquipmentTask = Bukkit.getScheduler().runTaskTimer(
-                ReplayModule.instance.getReplaySystem(),
-                new EquipmentTrackerTask(this),
+                replayModule.getReplaySystem(),
+                new EquipmentTrackerTask(this, replayModule),
                 0L,
                 20L
         );

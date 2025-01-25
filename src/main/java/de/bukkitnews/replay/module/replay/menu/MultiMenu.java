@@ -2,7 +2,6 @@ package de.bukkitnews.replay.module.replay.menu;
 
 import de.bukkitnews.replay.module.replay.util.ItemUtil;
 import lombok.Getter;
-import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -14,14 +13,12 @@ import java.util.List;
 
 public abstract class MultiMenu extends Menu {
 
-    protected @Nullable List<Object> data;
-
     protected int page = 0;
 
     @Getter
     protected final int maxItemsPerPage = 28;
 
-    public MultiMenu(@NonNull MenuUtil menuUtil) {
+    public MultiMenu(@NotNull MenuUtil menuUtil) {
         super(menuUtil);
     }
 
@@ -30,15 +27,14 @@ public abstract class MultiMenu extends Menu {
      *
      * @return A list of ItemStacks to be displayed.
      */
-    public abstract List<ItemStack> dataToItems();
+    public abstract @NotNull List<ItemStack> dataToItems();
 
     /**
      * Provides custom items for the menu border, if needed.
      *
      * @return A map with slot indices as keys and custom ItemStacks as values.
      */
-    @Nullable
-    public abstract HashMap<Integer, ItemStack> getCustomMenuBorderItems();
+    public abstract @Nullable HashMap<Integer, ItemStack> getCustomMenuBorderItems();
 
     /**
      * Adds a border and navigation buttons to the menu.
@@ -79,7 +75,9 @@ public abstract class MultiMenu extends Menu {
         for (int i = 0; i < maxItemsPerPage; i++) {
             int itemIndex = startIndex + i;
 
-            if (itemIndex >= items.size()) break;
+            if (itemIndex >= items.size()) {
+                break;
+            }
             if (currentSlot == 18 || currentSlot == 26 || currentSlot == 27 || currentSlot == 35) {
                 currentSlot++;
             }

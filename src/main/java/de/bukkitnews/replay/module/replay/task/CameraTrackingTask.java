@@ -3,22 +3,21 @@ package de.bukkitnews.replay.module.replay.task;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.SpawnEntityRecordable;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
-import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class CameraTrackingTask implements Runnable {
 
-    @NonNull private final ActiveRecording activeRecording;
-
-    public CameraTrackingTask(@NonNull ActiveRecording activeRecording) {
-        this.activeRecording = activeRecording;
-    }
+    private final @NotNull ActiveRecording activeRecording;
+    private final @NotNull ReplayModule replayModule;
 
     /**
      * Runs the task that tracks entities in the camera's region.
@@ -57,14 +56,10 @@ public class CameraTrackingTask implements Runnable {
                     continue;
                 }
 
-                Optional<Entity> optionalEntity = Optional.ofNullable(entity);
-
-                optionalEntity.filter(e -> activeRecording.addEntityIfNotAlreadyTracked(e.getUniqueId()))
-                        .ifPresent(e -> {
-                            System.out.println("ADDED ENTITY TO TRACKING: " + e.getType());
-                            SpawnEntityRecordable spawnEntityRecordable = new SpawnEntityRecordable(e);
-                            ReplayModule.instance.getRecordingHandler().addRecordable(activeRecording, spawnEntityRecordable);
-                        });
+                if (activeRecording.addEntityIfNotAlreadyTracked(entity.getUniqueId())) {
+                    SpawnEntityRecordable spawnEntityRecordable = new SpawnEntityRecordable(entity);
+                    replayModule.getRecordingHandler().addRecordable(activeRecording, spawnEntityRecordable);
+                }
             }
         }
     }

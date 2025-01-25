@@ -10,24 +10,24 @@ import de.bukkitnews.replay.module.replay.database.objects.RecordableRepository;
 import de.bukkitnews.replay.module.replay.database.objects.RecordingRepository;
 import de.bukkitnews.replay.module.replay.task.TickTrackerTask;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+@RequiredArgsConstructor
 public class RecordingHandler {
 
     private final RecordingRepository recordingRepository;
     private final RecordableRepository recordableRepository;
+    private final @NotNull ReplayModule replayModule;
+
     private final List<ActiveRecording> activeRecordings = new ArrayList<>();
     private static final int MAX_RECORDABLES = 250;
-
-    public RecordingHandler(@NonNull RecordingRepository recordingRepository, @NonNull RecordableRepository recordableRepository) {
-        this.recordingRepository = recordingRepository;
-        this.recordableRepository = recordableRepository;
-    }
 
     /**
      * Gets the active recording for a player, if any.
@@ -60,7 +60,7 @@ public class RecordingHandler {
      * @param recordingArea the camera used to record
      */
     public void startRecording(Player player, @NonNull RecordingArea recordingArea) {
-        ActiveRecording activeRecording = new ActiveRecording(recordingArea, player);
+        ActiveRecording activeRecording = new ActiveRecording(replayModule, recordingArea, player);
         activeRecordings.add(activeRecording);
 
         recordingRepository.insert(activeRecording.getRecording());
@@ -118,7 +118,7 @@ public class RecordingHandler {
      * @param activeRecording the active recording whose buffer to flush
      */
     public void flushRecordables(@NonNull ActiveRecording activeRecording) {
-        Bukkit.getScheduler().runTaskAsynchronously(ReplayModule.instance.getReplaySystem(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(replayModule.getReplaySystem(), () -> {
             Queue<Recordable> bufferCopy;
             synchronized (this) {
                 bufferCopy = new LinkedList<>(activeRecording.getRecordableBuffer());

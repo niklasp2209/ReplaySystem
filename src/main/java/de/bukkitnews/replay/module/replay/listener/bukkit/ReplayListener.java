@@ -1,4 +1,4 @@
-package de.bukkitnews.replay.module.replay.listener;
+package de.bukkitnews.replay.module.replay.listener.bukkit;
 
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import de.bukkitnews.replay.module.replay.handle.ReplayHandler;

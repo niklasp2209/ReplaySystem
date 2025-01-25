@@ -10,6 +10,7 @@ import lombok.Data;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ public class Replay {
     private final Player player;
     private final Recording recording;
     private final ReplayTask replayTask;
+    private final @NotNull ReplayModule replayModule;
 
     private final Map<UUID, Integer> spawnedEntities = new ConcurrentHashMap<>();
     private final Queue<List<Recordable>> recordableQueue = new ConcurrentLinkedQueue<>();
@@ -40,7 +42,8 @@ public class Replay {
      * @param recording The recording associated with this replay.
      * @param player The player who will be viewing the replay.
      */
-    public Replay(Recording recording, Player player) {
+    public Replay(ReplayModule replayModule, Recording recording, Player player) {
+        this.replayModule = replayModule;
         this.recording = recording;
         this.player = player;
 
@@ -52,8 +55,8 @@ public class Replay {
         player.setExp(0F);
         player.setLevel(0);
 
-        this.replayTask = new ReplayTask(this);
-        replayTask.runTaskTimerAsynchronously(ReplayModule.instance.getReplaySystem(), 0L, 1L);
+        this.replayTask = new ReplayTask(replayModule, this);
+        replayTask.runTaskTimerAsynchronously(replayModule.getReplaySystem(), 0L, 1L);
     }
 
     /**

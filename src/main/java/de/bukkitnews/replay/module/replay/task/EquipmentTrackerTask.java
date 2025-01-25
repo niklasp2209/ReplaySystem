@@ -3,11 +3,11 @@ package de.bukkitnews.replay.module.replay.task;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.SetEquipmentRecordable;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Queue;
 import java.util.UUID;
@@ -15,7 +15,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class EquipmentTrackerTask implements Runnable {
 
-    @NonNull private final ActiveRecording activeRecording;
+    private final @NotNull ActiveRecording activeRecording;
+    private final @NotNull ReplayModule replayModule;
 
     @Override
     public void run() {
@@ -34,7 +35,7 @@ public class EquipmentTrackerTask implements Runnable {
                             livingEntity.getEquipment().getLeggings(),
                             livingEntity.getEquipment().getBoots()
                     );
-                    ReplayModule.instance.getRecordingHandler().addRecordable(activeRecording, setEquipmentRecordable);
+                    replayModule.getRecordingHandler().addRecordable(activeRecording, setEquipmentRecordable);
                 }
             });
         }
