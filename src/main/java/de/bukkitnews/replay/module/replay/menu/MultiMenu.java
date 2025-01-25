@@ -1,11 +1,12 @@
-package de.bukkitnews.replay.framework.util.inventory;
+package de.bukkitnews.replay.module.replay.menu;
 
-import de.bukkitnews.replay.framework.util.ItemUtil;
+import de.bukkitnews.replay.module.replay.util.ItemUtil;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -13,15 +14,10 @@ import java.util.List;
 
 public abstract class MultiMenu extends Menu {
 
-    protected List<Object> data;
+    protected @Nullable List<Object> data;
 
     protected int page = 0;
 
-    /**
-     * -- GETTER --
-     *
-     * @return The maximum number of items displayed per page.
-     */
     @Getter
     protected final int maxItemsPerPage = 28;
 
@@ -49,7 +45,6 @@ public abstract class MultiMenu extends Menu {
      * Override this method for a custom border layout.
      */
     protected void addMenuBorder() {
-        // Add navigation buttons
         inventory.setItem(47, new ItemUtil(Material.DARK_OAK_BUTTON)
                 .setDisplayname(ChatColor.GREEN + "Vorherige Seite").build());
         inventory.setItem(49, new ItemUtil(Material.BARRIER)
@@ -57,7 +52,6 @@ public abstract class MultiMenu extends Menu {
         inventory.setItem(51, new ItemUtil(Material.DARK_OAK_BUTTON)
                 .setDisplayname(ChatColor.GREEN + "Nächste Seite").build());
 
-        // Add filler items to predefined slots
         int[] borderSlots = {0, 1, 7, 8, 9, 17, 36, 44, 45, 46, 52, 53};
         for (int slot : borderSlots) {
             if (inventory.getItem(slot) == null) {
@@ -65,7 +59,6 @@ public abstract class MultiMenu extends Menu {
             }
         }
 
-        // Place custom border items if provided
         if (getCustomMenuBorderItems() != null) {
             getCustomMenuBorderItems().forEach(inventory::setItem);
         }
@@ -98,35 +91,6 @@ public abstract class MultiMenu extends Menu {
                 break;
             }
         }
-    }
-
-
-    /**
-     * Navigates to the previous page if possible.
-     *
-     * @return true if the page changed, false if already on the first page.
-     */
-    public boolean prevPage() {
-        if (page > 0) {
-            page--;
-            refreshMenuItems();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Navigates to the next page if possible.
-     *
-     * @return true if the page changed, false if already on the last page.
-     */
-    public boolean nextPage() {
-        if ((page + 1) * maxItemsPerPage < dataToItems().size()) {
-            page++;
-            refreshMenuItems();
-            return true;
-        }
-        return false;
     }
 
 }

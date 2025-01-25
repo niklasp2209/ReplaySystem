@@ -5,6 +5,7 @@ import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.*;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
 import de.bukkitnews.replay.module.replay.handle.RecordingHandler;
+import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 public class BukkitListener implements Listener {
 
-    private final RecordingHandler recordingHandler;
+    @NonNull private final RecordingHandler recordingHandler;
 
     public BukkitListener() {
         this.recordingHandler = ReplayModule.instance.getRecordingHandler();

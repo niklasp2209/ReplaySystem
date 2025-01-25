@@ -7,13 +7,13 @@ import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities;
-import de.bukkitnews.replay.framework.util.MessageUtil;
+import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.recording.Recording;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
-import de.bukkitnews.replay.module.replay.database.objects.CameraObject;
-import de.bukkitnews.replay.module.replay.database.objects.RecordableObject;
+import de.bukkitnews.replay.module.replay.database.objects.CameraRepository;
+import de.bukkitnews.replay.module.replay.database.objects.RecordableRepository;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import lombok.NonNull;
 import org.bukkit.Location;
@@ -29,13 +29,13 @@ import java.util.Set;
 
 public class ReplayHandler {
 
-    private final RecordableObject recordableObject;
-    private final CameraObject cameraObject;
-    private final Set<Replay> replays = new HashSet<>();
+    @NonNull private final RecordableRepository recordableRepository;
+    @NonNull private final CameraRepository cameraRepository;
+    @NonNull private final Set<Replay> replays = new HashSet<>();
 
-    public ReplayHandler(@NonNull RecordableObject recordableObject, @NonNull CameraObject cameraObject) {
-        this.recordableObject = recordableObject;
-        this.cameraObject = cameraObject;
+    public ReplayHandler(@NonNull RecordableRepository recordableRepository, @NonNull CameraRepository cameraRepository) {
+        this.recordableRepository = recordableRepository;
+        this.cameraRepository = cameraRepository;
     }
 
     /**
@@ -75,7 +75,7 @@ public class ReplayHandler {
             long endTick = Math.min(startTick + 100, replay.getRecording().getTickDuration());
             Recording recording = replay.getRecording();
 
-            List<Recordable> recordables = recordableObject.findByRecordingIdAndTickBetween(recording.getId(), startTick, endTick);
+            List<Recordable> recordables = recordableRepository.findByRecordingIdAndTickBetween(recording.getId(), startTick, endTick);
             List<List<Recordable>> groupedRecordables = new ArrayList<>();
             long currentTick = 0;
 
@@ -137,7 +137,7 @@ public class ReplayHandler {
      */
     private void placeOriginalBlocks(@NonNull Recording recording, @NonNull Player viewer) {
         List<Material> originalBlocks = recording.getOriginalBlocks();
-        RecordingArea recordingArea = cameraObject.findById(recording.getCameraId());
+        RecordingArea recordingArea = cameraRepository.findById(recording.getCameraId());
         Location corner1 = recordingArea.getCorner1();
         Location corner2 = recordingArea.getCorner2();
 
@@ -172,7 +172,7 @@ public class ReplayHandler {
      * Places the actual blocks in the world based on the recording.
      */
     private void placeActualBlocks(@NonNull Recording recording, @NonNull Player viewer) {
-        RecordingArea recordingArea = cameraObject.findById(recording.getCameraId());
+        RecordingArea recordingArea = cameraRepository.findById(recording.getCameraId());
         Location corner1 = recordingArea.getCorner1();
         Location corner2 = recordingArea.getCorner2();
         World world = corner1.getWorld();

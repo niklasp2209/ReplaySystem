@@ -3,6 +3,7 @@ package de.bukkitnews.replay.module.replay.data.recordable;
 import com.github.retrooper.packetevents.protocol.player.User;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.types.ObjectId;

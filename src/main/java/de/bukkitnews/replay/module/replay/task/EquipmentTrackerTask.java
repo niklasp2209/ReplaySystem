@@ -4,6 +4,7 @@ import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.SetEquipmentRecordable;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -11,13 +12,10 @@ import org.bukkit.entity.LivingEntity;
 import java.util.Queue;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public class EquipmentTrackerTask implements Runnable {
 
-    private final ActiveRecording activeRecording;
-
-    public EquipmentTrackerTask(@NonNull ActiveRecording activeRecording) {
-        this.activeRecording = activeRecording;
-    }
+    @NonNull private final ActiveRecording activeRecording;
 
     @Override
     public void run() {

@@ -1,12 +1,12 @@
 package de.bukkitnews.replay.module.replay.menu.replay;
 
-import de.bukkitnews.replay.framework.exception.MenuManagerException;
-import de.bukkitnews.replay.framework.exception.MenuManagerNotSetupException;
-import de.bukkitnews.replay.framework.util.InventoryUtil;
-import de.bukkitnews.replay.framework.util.ItemUtil;
-import de.bukkitnews.replay.framework.util.MessageUtil;
-import de.bukkitnews.replay.framework.util.inventory.MenuUtil;
-import de.bukkitnews.replay.framework.util.inventory.MultiMenu;
+import de.bukkitnews.replay.exception.MenuManagerException;
+import de.bukkitnews.replay.exception.MenuManagerNotSetupException;
+import de.bukkitnews.replay.module.replay.util.InventoryUtil;
+import de.bukkitnews.replay.module.replay.util.ItemUtil;
+import de.bukkitnews.replay.module.replay.util.MessageUtil;
+import de.bukkitnews.replay.module.replay.menu.MenuUtil;
+import de.bukkitnews.replay.module.replay.menu.MultiMenu;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.menu.recording.RecordingsMenu;
@@ -25,7 +25,7 @@ import java.util.Optional;
 
 public class ReplayCamerasMenu extends MultiMenu {
 
-    private static final NamespacedKey CAMERA_ID_KEY = new NamespacedKey(ReplayModule.instance.getReplaySystem(), "camera_id");
+    @NonNull private static final NamespacedKey CAMERA_ID_KEY = new NamespacedKey(ReplayModule.instance.getReplaySystem(), "camera_id");
 
     public ReplayCamerasMenu(@NonNull MenuUtil menuUtil) {
         super(menuUtil);

@@ -1,7 +1,7 @@
 package de.bukkitnews.replay;
 
-import de.bukkitnews.replay.framework.database.ConfigManager;
-import de.bukkitnews.replay.framework.util.MessageUtil;
+import de.bukkitnews.replay.config.ConfigManager;
+import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.ModuleManager;
 import de.bukkitnews.replay.module.database.mongodb.MongoConnectionManager;
 import lombok.Getter;

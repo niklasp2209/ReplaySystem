@@ -2,7 +2,7 @@ package de.bukkitnews.replay.module.replay.task;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.player.User;
-import de.bukkitnews.replay.framework.util.MessageUtil;
+import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
@@ -14,10 +14,10 @@ import java.util.Optional;
 
 public class ReplayTask extends BukkitRunnable {
 
-    private final Replay replay;
-    private final ReplayHandler replayHandler;
+    @NonNull private final Replay replay;
+    @NonNull private final ReplayHandler replayHandler;
     private long currentTick = 0;
-    private final User user;
+    @NonNull private final User user;
     private boolean paused = true;
 
     public ReplayTask(@NonNull Replay replay) {

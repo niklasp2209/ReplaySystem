@@ -1,8 +1,7 @@
 package de.bukkitnews.replay.module.replay.data.replay;
 
-import de.bukkitnews.replay.ReplaySystem;
-import de.bukkitnews.replay.framework.util.ItemUtil;
-import de.bukkitnews.replay.framework.util.MessageUtil;
+import de.bukkitnews.replay.module.replay.util.ItemUtil;
+import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.recording.Recording;

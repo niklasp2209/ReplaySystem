@@ -2,7 +2,7 @@ package de.bukkitnews.replay.module.replay.data.recordable.recordables;
 
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerCollectItem;
-import de.bukkitnews.replay.framework.exception.EntityNotFoundException;
+import de.bukkitnews.replay.exception.EntityNotFoundException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import lombok.*;

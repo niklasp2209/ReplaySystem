@@ -1,8 +1,8 @@
 package de.bukkitnews.replay.module.replay.listener;
 
-import de.bukkitnews.replay.framework.util.MessageUtil;
-import de.bukkitnews.replay.framework.util.RegionUtil;
-import de.bukkitnews.replay.framework.util.region.Region;
+import de.bukkitnews.replay.module.replay.util.MessageUtil;
+import de.bukkitnews.replay.module.replay.region.RegionUtil;
+import de.bukkitnews.replay.module.replay.region.region.Region;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.handle.CameraHandler;
@@ -21,7 +21,7 @@ import java.util.Optional;
 
 public class CameraCreationListener implements Listener {
 
-    private final CameraHandler cameraHandler;
+    @NonNull private final CameraHandler cameraHandler;
 
     public CameraCreationListener() {
         this.cameraHandler = ReplayModule.instance.getCameraHandler();

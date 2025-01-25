@@ -1,11 +1,11 @@
 package de.bukkitnews.replay.module.replay.menu.recording;
 
-import de.bukkitnews.replay.framework.exception.MenuManagerException;
-import de.bukkitnews.replay.framework.exception.MenuManagerNotSetupException;
-import de.bukkitnews.replay.framework.util.ItemUtil;
-import de.bukkitnews.replay.framework.util.MessageUtil;
-import de.bukkitnews.replay.framework.util.inventory.MenuUtil;
-import de.bukkitnews.replay.framework.util.inventory.MultiMenu;
+import de.bukkitnews.replay.exception.MenuManagerException;
+import de.bukkitnews.replay.exception.MenuManagerNotSetupException;
+import de.bukkitnews.replay.module.replay.util.ItemUtil;
+import de.bukkitnews.replay.module.replay.util.MessageUtil;
+import de.bukkitnews.replay.module.replay.menu.MenuUtil;
+import de.bukkitnews.replay.module.replay.menu.MultiMenu;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.data.recording.Recording;
@@ -27,11 +27,11 @@ import java.util.List;
 
 public class RecordingsMenu extends MultiMenu {
 
-    private static final NamespacedKey RECORDING_ID_KEY = new NamespacedKey(ReplayModule.instance.getReplaySystem(), "recordingId");
+    @NonNull private static final NamespacedKey RECORDING_ID_KEY = new NamespacedKey(ReplayModule.instance.getReplaySystem(), "recordingId");
 
-    private final RecordingHandler recordingHandler;
-    private final ReplayHandler replayHandler;
-    private final RecordingArea recordingArea;
+    @NonNull private final RecordingHandler recordingHandler;
+    @NonNull private final ReplayHandler replayHandler;
+    @NonNull private final RecordingArea recordingArea;
 
     public RecordingsMenu(@NonNull MenuUtil menuUtil) {
         super(menuUtil);

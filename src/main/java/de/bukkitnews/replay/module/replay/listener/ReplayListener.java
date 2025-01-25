@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ReplayListener implements Listener {
 
-    private final ReplayHandler replayHandler;
+    @NonNull private final ReplayHandler replayHandler;
 
     public ReplayListener(@NonNull ReplayHandler replayHandler) {
         this.replayHandler = replayHandler;

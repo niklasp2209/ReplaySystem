@@ -3,7 +3,7 @@ package de.bukkitnews.replay.module.replay.data.recordable.recordables;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityHeadLook;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityTeleport;
-import de.bukkitnews.replay.framework.exception.EntityNotFoundException;
+import de.bukkitnews.replay.exception.EntityNotFoundException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;

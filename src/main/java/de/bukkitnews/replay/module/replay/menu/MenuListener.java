@@ -1,7 +1,7 @@
-package de.bukkitnews.replay.framework.util.inventory;
+package de.bukkitnews.replay.module.replay.menu;
 
-import de.bukkitnews.replay.framework.exception.MenuManagerException;
-import de.bukkitnews.replay.framework.exception.MenuManagerNotSetupException;
+import de.bukkitnews.replay.exception.MenuManagerException;
+import de.bukkitnews.replay.exception.MenuManagerNotSetupException;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;

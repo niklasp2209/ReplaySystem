@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class CameraTrackingTask implements Runnable {
 
-    private final ActiveRecording activeRecording;
+    @NonNull private final ActiveRecording activeRecording;
 
     public CameraTrackingTask(@NonNull ActiveRecording activeRecording) {
         this.activeRecording = activeRecording;

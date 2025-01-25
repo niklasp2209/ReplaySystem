@@ -1,9 +1,9 @@
 package de.bukkitnews.replay.module.replay.command;
 
-import de.bukkitnews.replay.framework.exception.MenuManagerException;
-import de.bukkitnews.replay.framework.exception.MenuManagerNotSetupException;
-import de.bukkitnews.replay.framework.util.InventoryUtil;
-import de.bukkitnews.replay.framework.util.MessageUtil;
+import de.bukkitnews.replay.exception.MenuManagerException;
+import de.bukkitnews.replay.exception.MenuManagerNotSetupException;
+import de.bukkitnews.replay.module.replay.util.InventoryUtil;
+import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.menu.recording.RecordCamerasMenu;
 import de.bukkitnews.replay.module.replay.menu.replay.ReplayCamerasMenu;
@@ -21,8 +21,8 @@ import org.bukkit.entity.Player;
  */
 public class ReplayCommand implements CommandExecutor {
 
-    private final CameraHandler cameraHandler;
-    private final RecordingHandler recordingHandler;
+    @NonNull private final CameraHandler cameraHandler;
+    @NonNull private final RecordingHandler recordingHandler;
 
     public ReplayCommand() {
         this.cameraHandler = ReplayModule.instance.getCameraHandler();

@@ -7,7 +7,7 @@ import com.mongodb.ServerApiVersion;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import de.bukkitnews.replay.framework.database.ConfigManager;
+import de.bukkitnews.replay.config.ConfigManager;
 import de.bukkitnews.replay.module.database.mongodb.codec.EntityTypeCodec;
 import de.bukkitnews.replay.module.database.mongodb.codec.ItemStackCodec;
 import de.bukkitnews.replay.module.database.mongodb.codec.LocationCodec;
@@ -71,7 +71,6 @@ public class MongoConnectionManager {
                         .build())
         );
 
-        // Configure MongoClient settings
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(connectionString))
                 .uuidRepresentation(UuidRepresentation.STANDARD)
@@ -79,7 +78,6 @@ public class MongoConnectionManager {
                 .serverApi(ServerApi.builder().version(ServerApiVersion.V1).build())
                 .build();
 
-        // Initialize MongoClient and MongoDatabase
         this.mongoClient = MongoClients.create(settings);
         this.mongoDatabase = mongoClient.getDatabase(databaseName);
     }

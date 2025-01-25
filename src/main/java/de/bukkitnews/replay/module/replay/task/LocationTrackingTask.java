@@ -17,7 +17,7 @@ public class LocationTrackingTask implements Runnable {
     private final ActiveRecording activeRecording;
     private final RecordingArea recordingArea;
 
-    public LocationTrackingTask(@NonNull ActiveRecording activeRecording) {
+    public LocationTrackingTask(ActiveRecording activeRecording) {
         this.activeRecording = activeRecording;
         this.recordingArea = activeRecording.getRecordingArea();
     }
@@ -52,7 +52,7 @@ public class LocationTrackingTask implements Runnable {
      *
      * @param recordableEntity The UUID of the entity to be removed from tracking.
      */
-    private void removeEntityFromTracking(@NonNull UUID recordableEntity) {
+    private void removeEntityFromTracking(UUID recordableEntity) {
         System.out.println("REMOVING THE DESPAWNED ENTITY FROM TRACKING");
 
         activeRecording.removeEntityFromTracking(recordableEntity);

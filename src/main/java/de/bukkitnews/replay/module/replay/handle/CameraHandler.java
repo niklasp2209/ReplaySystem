@@ -1,10 +1,10 @@
 package de.bukkitnews.replay.module.replay.handle;
 
-import de.bukkitnews.replay.framework.util.ItemUtil;
-import de.bukkitnews.replay.framework.util.MessageUtil;
+import de.bukkitnews.replay.module.replay.util.ItemUtil;
+import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.data.recording.Recording;
-import de.bukkitnews.replay.module.replay.database.objects.CameraObject;
+import de.bukkitnews.replay.module.replay.database.objects.CameraRepository;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
 import org.bukkit.Material;
@@ -19,11 +19,11 @@ import java.util.concurrent.ConcurrentMap;
 
 public class CameraHandler {
 
-    private final CameraObject cameraObject;
-    private final ConcurrentMap<Player, RecordingArea> createdCameras = new ConcurrentHashMap<>();
+    @NonNull private final CameraRepository cameraRepository;
+    @NonNull private final ConcurrentMap<Player, RecordingArea> createdCameras = new ConcurrentHashMap<>();
 
-    public CameraHandler(@NonNull CameraObject cameraObject) {
-        this.cameraObject = cameraObject;
+    public CameraHandler(@NonNull CameraRepository cameraRepository) {
+        this.cameraRepository = cameraRepository;
     }
 
     /**
@@ -37,7 +37,7 @@ public class CameraHandler {
      * Finds a camera by its ID.
      */
     public Optional<RecordingArea> findById(@Nullable String id) {
-        return Optional.ofNullable(cameraObject.findById(new ObjectId(id)));
+        return Optional.ofNullable(cameraRepository.findById(new ObjectId(id)));
     }
 
     /**
@@ -45,9 +45,9 @@ public class CameraHandler {
      */
     public List<RecordingArea> getCamerasForPlayer(@NonNull Player player) {
         if (player.hasPermission("replay.command.admin")) {
-            return cameraObject.findAll();
+            return cameraRepository.findAll();
         } else {
-            return cameraObject.findAllByOwnerId(player.getUniqueId());
+            return cameraRepository.findAllByOwnerId(player.getUniqueId());
         }
     }
 
@@ -88,7 +88,7 @@ public class CameraHandler {
             return;
         }
 
-        cameraObject.insert(recordingArea);
+        cameraRepository.insert(recordingArea);
         player.getInventory().clear();
         player.sendMessage(MessageUtil.getMessage("camera_creating_finished", recordingArea.getName()));
     }

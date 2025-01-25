@@ -1,4 +1,4 @@
-package de.bukkitnews.replay.framework.database;
+package de.bukkitnews.replay.config;
 
 import de.bukkitnews.replay.ReplaySystem;
 import lombok.NonNull;
@@ -9,12 +9,12 @@ import java.io.File;
 import java.io.IOException;
 
 public class ConfigManager {
-    private final ReplaySystem replaySystem;
-    private final String fileName;
+    @NonNull private final ReplaySystem replaySystem;
+    @NonNull private final String fileName;
     private File configFile;
     private FileConfiguration fileConfiguration;
 
-    public ConfigManager(@NonNull ReplaySystem replaySystem, String fileName) {
+    public ConfigManager(@NonNull ReplaySystem replaySystem, @NonNull String fileName) {
         this.replaySystem = replaySystem;
         this.fileName = fileName;
         setup();

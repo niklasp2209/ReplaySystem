@@ -1,11 +1,11 @@
-package de.bukkitnews.replay.framework.util;
+package de.bukkitnews.replay.module.replay.util;
 
 
-import de.bukkitnews.replay.framework.database.ConfigManager;
-import lombok.NonNull;
+import de.bukkitnews.replay.config.ConfigManager;
 import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -19,15 +19,15 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class MessageUtil {
 
-    private static final Map<String, String> messages = new HashMap<>();
-    private static final Logger LOGGER = Logger.getLogger(MessageUtil.class.getName());
+    private static final @NotNull Map<String, String> MESSAGES = new HashMap<>();
+    private static final @NotNull Logger LOGGER = Logger.getLogger(MessageUtil.class.getName());
 
     /**
      * Loads messages from the configuration file.
      *
      * @param configManager The ConfigManager that manages the configuration file.
      */
-    public static void loadMessages(@NonNull ConfigManager configManager) {
+    public static void loadMessages(@NotNull ConfigManager configManager) {
         FileConfiguration config = configManager.getConfig();
 
         if (!config.contains("messages")) {
@@ -36,16 +36,8 @@ public class MessageUtil {
         }
 
         config.getConfigurationSection("messages").getKeys(false).stream()
-                .filter(key -> {
-                    String message = config.getString("messages." + key, "");
-                    if (message.isEmpty()) {
-                        LOGGER.log(Level.WARNING, "Empty message found for key '" + key + "' in the configuration.");
-                        return false;
-                    }
-                    messages.put(key, message);
-                    return true;
-                }).forEach(key -> {
-                });
+                .filter(key -> !config.getString("messages." + key).isEmpty())
+                .forEach(key -> MESSAGES.put(key, config.getString("messages." + key)));
     }
 
     /**
@@ -55,8 +47,8 @@ public class MessageUtil {
      * @param placeholders The placeholders to replace in the message.
      * @return The formatted message.
      */
-    public static String getMessage(@NonNull String key, @NonNull String... placeholders) {
-        String template = messages.getOrDefault(key, "Unknown message key: " + key);
+    public static @NotNull String getMessage(@NotNull String key, @NotNull String... placeholders) {
+        String template = MESSAGES.getOrDefault(key, "Unknown message key: " + key);
         String formatted = formatMessage(template, placeholders);
         return ChatColor.translateAlternateColorCodes('&', formatted);
     }
@@ -67,9 +59,9 @@ public class MessageUtil {
      * @param key The key of the message in the configuration.
      * @return The message without placeholders.
      */
-    public static String getMessage(@NonNull String key) {
+    public static @NotNull String getMessage(@NotNull String key) {
         return ChatColor.translateAlternateColorCodes(
-                '&', messages.getOrDefault(key, "Unknown message key: " + key));
+                '&', MESSAGES.getOrDefault(key, "Unknown message key: " + key));
     }
 
     /**
@@ -79,7 +71,7 @@ public class MessageUtil {
      * @param placeholders The placeholders to replace in the message.
      * @return The formatted message.
      */
-    private static String formatMessage(@NonNull String template, @NonNull String... placeholders) {
+    private static @NotNull String formatMessage(@NotNull String template, @NotNull String... placeholders) {
         if (placeholders.length != countPlaceholders(template)) {
             LOGGER.log(Level.WARNING, "Number of placeholders does not match the number of '%s' in the template.");
         }
@@ -92,7 +84,7 @@ public class MessageUtil {
      * @param template The message template.
      * @return The number of placeholders.
      */
-    private static int countPlaceholders(@NonNull String template) {
+    private static int countPlaceholders(@NotNull String template) {
         Pattern pattern = Pattern.compile("%s");
         Matcher matcher = pattern.matcher(template);
         int count = 0;
@@ -108,18 +100,7 @@ public class MessageUtil {
      * @param key The key of the message in the configuration.
      * @return An Optional containing the message, if present, or empty if not found.
      */
-    public static Optional<String> getMessageOptional(@Nullable String key) {
-        return Optional.ofNullable(messages.get(key));
-    }
-
-    /**
-     * Retrieves a formatted message with placeholders as an Optional.
-     *
-     * @param key          The key of the message.
-     * @param placeholders The placeholders to replace in the message.
-     * @return The formatted message as an Optional.
-     */
-    public static Optional<String> getMessageOptional(@NonNull String key, @NonNull String... placeholders) {
-        return getMessageOptional(key).map(message -> formatMessage(message, placeholders));
+    public static @NotNull Optional<String> getMessageOptional(@Nullable String key) {
+        return Optional.ofNullable(MESSAGES.get(key));
     }
 }
