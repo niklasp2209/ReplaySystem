@@ -40,7 +40,7 @@ public class ActiveRecording {
         this.replayModule = replayModule;
         this.recording = new Recording(recordingArea, owner);
         this.recordingArea = recordingArea;
-        this.recording.setOriginalBlocks(this.recordingArea.getMaterialsInRegion());
+        recording.setOriginalBlocks(recordingArea.getMaterialsInRegion());
         this.recordableEntities = new ConcurrentLinkedQueue<>();
 
         this.scanEntitiesTask = Bukkit.getScheduler().runTaskTimer(
@@ -69,11 +69,11 @@ public class ActiveRecording {
      * Stops the recording, setting end time and end tick.
      */
     public void stopRecording() {
-        this.recording.setEndTime(System.currentTimeMillis());
-        this.recording.setEndTick(TickTrackerTask.getCurrentTick());
-        this.scanEntitiesTask.cancel();
-        this.trackLocationTask.cancel();
-        this.trackEquipmentTask.cancel();
+        recording.setEndTime(System.currentTimeMillis());
+        recording.setEndTick(TickTrackerTask.getCurrentTick());
+        scanEntitiesTask.cancel();
+        trackLocationTask.cancel();
+        trackEquipmentTask.cancel();
     }
 
     /**
@@ -125,7 +125,7 @@ public class ActiveRecording {
             return false;
         }
 
-        isProcessingBuffer = true;
+        this.isProcessingBuffer = true;
         return true;
     }
 
@@ -133,6 +133,6 @@ public class ActiveRecording {
      * Completes the buffer processing task.
      */
     public void completeBufferProcessing() {
-        isProcessingBuffer = false;
+        this.isProcessingBuffer = false;
     }
 }

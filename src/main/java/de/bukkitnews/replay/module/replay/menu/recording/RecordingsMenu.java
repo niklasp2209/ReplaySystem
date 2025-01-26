@@ -87,7 +87,7 @@ public class RecordingsMenu extends MultiMenu {
 
     @Override
     public @NotNull List<ItemStack> dataToItems() {
-        return this.recordingHandler.getRecordingsForCamera(recordingArea).stream()
+        return recordingHandler.getRecordingsForCamera(recordingArea).stream()
                 .map(this::createRecordingItem)
                 .toList();
     }

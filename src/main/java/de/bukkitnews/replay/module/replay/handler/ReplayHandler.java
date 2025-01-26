@@ -116,7 +116,7 @@ public class ReplayHandler {
      */
     public void stopAllReplays() {
         replays.forEach(this::stopReplay);
-        this.replays.clear();
+        replays.clear();
     }
 
     /**

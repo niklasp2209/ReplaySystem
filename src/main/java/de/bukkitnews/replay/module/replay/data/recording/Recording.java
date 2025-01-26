@@ -28,7 +28,7 @@ public class Recording {
      * Creates a new recording for the specified camera and owner.
      *
      * @param recordingArea The camera associated with this recording.
-     * @param owner  The player who owns the recording.
+     * @param owner         The player who owns the recording.
      */
     public Recording(@NotNull RecordingArea recordingArea, @NotNull Player owner) {
         this.cameraId = recordingArea.getId();

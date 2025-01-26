@@ -59,7 +59,7 @@ public class CameraTrackingTask implements Runnable {
         for (Chunk chunk : chunksInRegion) {
             Entity[] entities = chunk.getEntities();
             for (Entity entity : entities) {
-                if (!activeRecording.getRecordingArea().isInRegion(entity.getLocation())) {
+                if (activeRecording.getRecordingArea().isInRegion(entity.getLocation())) {
                     continue;
                 }
 

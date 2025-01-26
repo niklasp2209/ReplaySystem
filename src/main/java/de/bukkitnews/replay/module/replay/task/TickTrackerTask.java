@@ -13,8 +13,8 @@ public class TickTrackerTask {
      * Starts tracking the current tick by incrementing it every game tick.
      * This method schedules a repeating task that increments the {@link #currentTick} every tick.
      */
-    public static void startTracking(ReplayModule replayModule){
-        Bukkit.getScheduler().runTaskTimer(replayModule.getReplaySystem(), () ->{
+    public static void startTracking(ReplayModule replayModule) {
+        Bukkit.getScheduler().runTaskTimer(replayModule.getReplaySystem(), () -> {
             currentTick++;
         }, 0L, 1L);
     }

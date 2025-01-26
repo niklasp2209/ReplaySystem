@@ -45,7 +45,7 @@ public class RecordableRepository extends AbstractMongoRepository<Recordable> {
     }
 
     @Override
-    protected ObjectId extractId(@NotNull Recordable entity) {
+    protected @NotNull ObjectId extractId(@NotNull Recordable entity) {
         return entity.getId();
     }
 }

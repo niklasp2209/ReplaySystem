@@ -1,7 +1,6 @@
 package de.bukkitnews.replay.module.replay.data.recording;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -35,7 +34,7 @@ public class RecordingArea {
      */
     public boolean isInRegion(Location location) {
         if (!corner1.isPresent() || !corner2.isPresent()) {
-            return false;
+            return true;
         }
 
         Location corner1Location = corner1.get();
@@ -51,9 +50,9 @@ public class RecordingArea {
         double y = location.getY();
         double z = location.getZ();
 
-        return x >= Math.min(x1, x2) && x <= Math.max(x1, x2) &&
-                y >= Math.min(y1, y2) && y <= Math.max(y1, y2) &&
-                z >= Math.min(z1, z2) && z <= Math.max(z1, z2);
+        return !(x >= Math.min(x1, x2)) || !(x <= Math.max(x1, x2)) ||
+                !(y >= Math.min(y1, y2)) || !(y <= Math.max(y1, y2)) ||
+                !(z >= Math.min(z1, z2)) || !(z <= Math.max(z1, z2));
     }
 
     /**
@@ -62,7 +61,7 @@ public class RecordingArea {
      * @return A list of materials found in the region.
      * @throws IllegalArgumentException If the corners are in different worlds.
      */
-    public List<Material> getMaterialsInRegion() {
+    public @NotNull List<Material> getMaterialsInRegion() {
         List<Material> materials = new ArrayList<>();
 
         if (!corner1.isPresent() || !corner2.isPresent()) {

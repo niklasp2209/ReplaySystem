@@ -38,6 +38,7 @@ public class ConfigManager {
 
     /**
      * Gets the FileConfiguration object, which provides access to the configuration data.
+     *
      * @return The FileConfiguration object containing the loaded configuration data
      */
     public @NotNull FileConfiguration getConfig() {
@@ -60,11 +61,12 @@ public class ConfigManager {
      * Reloads the configuration from the file, refreshing the configuration data.
      */
     public void reload() {
-        fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
+        this.fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
     }
 
     /**
      * Checks if the configuration file exists on the disk.
+     *
      * @return true if the configuration file exists, false otherwise
      */
     public boolean configExists() {

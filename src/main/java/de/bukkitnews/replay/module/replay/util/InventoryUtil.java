@@ -5,6 +5,7 @@ import de.bukkitnews.replay.module.replay.menu.MenuUtil;
 import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ public class InventoryUtil {
      */
     public static void openMenu(@NotNull Class<? extends Menu> menuClass, @NotNull Player player) {
 
-        Menu menu = null;
+        Menu menu;
         try {
             menu = menuClass.getConstructor(MenuUtil.class).newInstance(getPlayerMenuUtility(player));
         } catch (InstantiationException | IllegalAccessException |
@@ -39,7 +40,7 @@ public class InventoryUtil {
      * @param player The player whose PlayerMenuUtility is needed.
      * @return The PlayerMenuUtility associated with the player.
      */
-    public static MenuUtil getPlayerMenuUtility(@NotNull Player player) {
+    public static @NotNull MenuUtil getPlayerMenuUtility(@NotNull Player player) {
         return PLAYER_MENU_UTIL_MAP.computeIfAbsent(player, MenuUtil::new);
     }
 }

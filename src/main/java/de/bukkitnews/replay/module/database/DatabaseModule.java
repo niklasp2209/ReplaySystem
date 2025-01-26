@@ -17,11 +17,12 @@ public class DatabaseModule extends CustomModule {
 
     @Override
     public void activate() {
-        mongoConnectionManager = new MongoConnectionManager(this.getReplaySystem().getMongoConfig());
-        this.getReplaySystem().getLogger().info("MongoDB connection initialized successfully!");
+        this.mongoConnectionManager = new MongoConnectionManager(getReplaySystem().getMongoConfig());
+        getReplaySystem().getLogger().info("MongoDB connection initialized successfully!");
 
         getReplaySystem().setMongoConnectionManager(mongoConnectionManager);
 
+        start();
     }
 
     @Override

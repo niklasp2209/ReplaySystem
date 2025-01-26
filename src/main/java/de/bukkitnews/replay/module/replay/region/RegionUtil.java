@@ -126,7 +126,7 @@ public class RegionUtil {
         team.addEntry(slime.getUniqueId().toString());
     }
 
-    private int parseNumberFromTeam(@NotNull Team team){
+    private int parseNumberFromTeam(@NotNull Team team) {
         try {
             return Integer.parseInt(team.getName().substring(TEAM_PREFIX.length()));
         } catch (NumberFormatException e) {

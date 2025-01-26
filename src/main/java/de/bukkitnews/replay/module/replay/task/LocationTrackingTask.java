@@ -36,7 +36,7 @@ public class LocationTrackingTask implements Runnable {
             recordableEntities.forEach(recordableEntity -> {
                 Optional.ofNullable(Bukkit.getEntity(recordableEntity))
                         .ifPresentOrElse(entity -> {
-                            if (!recordingArea.isInRegion(entity.getLocation())) {
+                            if (recordingArea.isInRegion(entity.getLocation())) {
                                 removeEntityFromTracking(recordableEntity);
                                 return;
                             }

@@ -44,7 +44,7 @@ public class CameraHandler {
         return cameraRepository.findAllByOwnerId(player.getUniqueId());
     }
 
-    public @NotNull Optional<RecordingArea> findById(@Nullable String id){
+    public @NotNull Optional<RecordingArea> findById(@Nullable String id) {
         return Optional.ofNullable(cameraRepository.findById(new ObjectId(id)));
     }
 

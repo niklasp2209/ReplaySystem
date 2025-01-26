@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -38,8 +37,6 @@ public class MongoConnectionManager {
      * @param configManager the configuration file containing MongoDB settings
      */
     public MongoConnectionManager(@NotNull ConfigManager configManager) {
-        Objects.requireNonNull(configManager, "ConfigManager must not be null");
-
         FileConfiguration fileConfiguration = configManager.getConfig();
         String databaseName = getConfigValue(fileConfiguration, "mongodb.database")
                 .orElseThrow(() -> new IllegalArgumentException("Database is not configured!"));
@@ -79,7 +76,7 @@ public class MongoConnectionManager {
      *
      * @return the MongoDatabase
      */
-    public MongoDatabase getDatabase() {
+    public @NotNull MongoDatabase getDatabase() {
         return mongoDatabase;
     }
 
@@ -97,9 +94,9 @@ public class MongoConnectionManager {
      * @param config The configuration file to search in. Can be null.
      * @param key    The key to look up in the configuration. Must not be null.
      * @return An Optional containing the value if present, or an empty Optional if the
-     *         configuration is null or the key does not exist.
+     * configuration is null or the key does not exist.
      */
-    private Optional<String> getConfigValue(@Nullable FileConfiguration config, @NotNull String key) {
+    private @NotNull Optional<String> getConfigValue(@Nullable FileConfiguration config, @NotNull String key) {
         if (config == null) {
             return Optional.empty();
         }
@@ -110,9 +107,9 @@ public class MongoConnectionManager {
      * Finds all subclasses of the {@link Recordable} class within a specific package.
      *
      * @return A {@link Class} object representing the collection of Recordable subclasses found.
-     *         This class encapsulates the metadata of the subclasses.
+     * This class encapsulates the metadata of the subclasses.
      */
-    private Class<?> findRecordableClasses() {
+    private @NotNull Class<?> findRecordableClasses() {
         Reflections reflections = new Reflections("de.bukkitnews.replay.module.replay.data.recordable.recordables");
         return reflections.getSubTypesOf(Recordable.class).getClass();
     }

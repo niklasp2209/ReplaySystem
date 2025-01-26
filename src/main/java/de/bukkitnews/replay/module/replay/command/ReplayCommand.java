@@ -68,7 +68,7 @@ public class ReplayCommand implements CommandExecutor {
         }
 
         String replayName = args[1];
-        this.cameraHandler.startCreatingCamera(player, replayName);
+        cameraHandler.startCreatingCamera(player, replayName);
         player.sendMessage(MessageUtil.getMessage("command_replay_create_success", replayName));
     }
 
@@ -78,7 +78,7 @@ public class ReplayCommand implements CommandExecutor {
      * @param player the player executing the command
      */
     private void handleStartCommand(@NotNull Player player) {
-        if (this.recordingHandler.getPlayerActiveRecording(player).isPresent()) {
+        if (recordingHandler.getPlayerActiveRecording(player).isPresent()) {
             player.sendMessage(MessageUtil.getMessage("command_record_already"));
             return;
         }
@@ -92,7 +92,7 @@ public class ReplayCommand implements CommandExecutor {
      * @param player the player executing the command
      */
     private void handleStopCommand(@NotNull Player player) {
-        this.recordingHandler.stopRecording(player);
+        recordingHandler.stopRecording(player);
     }
 
     /**

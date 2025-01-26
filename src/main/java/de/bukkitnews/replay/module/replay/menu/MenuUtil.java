@@ -1,7 +1,6 @@
 package de.bukkitnews.replay.module.replay.menu;
 
 import lombok.Getter;
-import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +14,7 @@ public class MenuUtil {
     private final @NotNull HashMap<String, Object> dataMap = new HashMap<>();
     private final @NotNull Stack<Menu> history = new Stack<>();
 
-    public MenuUtil(@NonNull Player player) {
+    public MenuUtil(@NotNull Player player) {
         this.player = player;
     }
 
@@ -23,29 +22,29 @@ public class MenuUtil {
      * @param identifier A key to store the data by
      * @param data       The data itself to be stored
      */
-    public void setData(@NonNull String identifier, @NonNull Object data) {
-        this.dataMap.put(identifier, data);
+    public void setData(@NotNull String identifier, @NotNull Object data) {
+        dataMap.put(identifier, data);
     }
 
-    public void setData(@NonNull Enum identifier, @NonNull Object data) {
-        this.dataMap.put(identifier.toString(), data);
+    public void setData(@NotNull Enum identifier, @NotNull Object data) {
+        dataMap.put(identifier.toString(), data);
     }
 
     /**
      * @param identifier The key for the data stored in the PMC
      * @return The retrieved value or null if not found
      */
-    public @NotNull Object getData(@NonNull String identifier) {
-        return this.dataMap.get(identifier);
+    public @NotNull Object getData(@NotNull String identifier) {
+        return dataMap.get(identifier);
     }
 
-    public @NotNull Object getData(@NonNull Enum identifier) {
-        return this.dataMap.get(identifier.toString());
+    public @NotNull Object getData(@NotNull Enum identifier) {
+        return dataMap.get(identifier.toString());
     }
 
-    public @NotNull <T> T getData(@NonNull String identifier, @NonNull Class<T> classRef) {
+    public @NotNull <T> T getData(@NotNull String identifier, @NotNull Class<T> classRef) {
 
-        Object obj = this.dataMap.get(identifier);
+        Object obj = dataMap.get(identifier);
 
         if (obj == null) {
             return null;
@@ -54,9 +53,9 @@ public class MenuUtil {
         }
     }
 
-    public @NotNull <T> T getData(@NonNull Enum identifier, @NonNull Class<T> classRef) {
+    public @NotNull <T> T getData(@NotNull Enum identifier, @NotNull Class<T> classRef) {
 
-        Object obj = this.dataMap.get(identifier.toString());
+        Object obj = dataMap.get(identifier.toString());
 
         if (obj == null) {
             return null;
@@ -65,8 +64,8 @@ public class MenuUtil {
         }
     }
 
-    public void pushMenu(@NonNull Menu menu) {
-        this.history.push(menu);
+    public void pushMenu(@NotNull Menu menu) {
+        history.push(menu);
     }
 
 }

@@ -27,7 +27,7 @@ public class RecordCamerasMenu extends MultiMenu {
     public RecordCamerasMenu(@NotNull ReplayModule replayModule, @NotNull MenuUtil menuUtil) {
         super(menuUtil);
         this.replayModule = replayModule;
-        cameraIdKey = new NamespacedKey(replayModule.getReplaySystem(), "camera_id");
+        this.cameraIdKey = new NamespacedKey(replayModule.getReplaySystem(), "camera_id");
     }
 
     @Override

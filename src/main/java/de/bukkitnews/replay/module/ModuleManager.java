@@ -3,7 +3,7 @@ package de.bukkitnews.replay.module;
 import de.bukkitnews.replay.ReplaySystem;
 import de.bukkitnews.replay.module.database.DatabaseModule;
 import de.bukkitnews.replay.module.replay.ReplayModule;
-import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
@@ -18,7 +18,7 @@ public final class ModuleManager {
     private final ReplaySystem replaySystem;
     private final LinkedHashMap<Class<? extends CustomModule>, CustomModule> modules;
 
-    public ModuleManager(@NonNull ReplaySystem replaySystem){
+    public ModuleManager(@NotNull ReplaySystem replaySystem) {
         this.replaySystem = replaySystem;
         this.modules = new LinkedHashMap<>();
     }
@@ -27,9 +27,9 @@ public final class ModuleManager {
      * Activates all modules in the module list by calling their enable method.
      * This method is responsible for starting all modules in the system.
      */
-    public void activateModules(){
-        this.modules.put(DatabaseModule.class, new DatabaseModule(this.replaySystem));
-        this.modules.put(ReplayModule.class, new ReplayModule(this.replaySystem));
+    public void activateModules() {
+        modules.put(DatabaseModule.class, new DatabaseModule(replaySystem));
+        modules.put(ReplayModule.class, new ReplayModule(replaySystem));
 
         loadModules();
     }
@@ -38,17 +38,17 @@ public final class ModuleManager {
      * Deactivates all modules by calling their stop method.
      * This method removes all modules from the system.
      */
-    public void deactivateModules(){
+    public void deactivateModules() {
         unloadModules();
     }
 
     /**
      * Loads all modules into the system by invoking their activation methods.
      */
-    private void loadModules(){
-        this.modules.forEach((moduleClass, customModuleInstance) -> {
+    private void loadModules() {
+        modules.forEach((moduleClass, customModuleInstance) -> {
             customModuleInstance.activate();
-            this.replaySystem.getLogger().info(customModuleInstance.getModuleName()+" module enabled.");
+            replaySystem.getLogger().info(customModuleInstance.getModuleName() + " module enabled.");
         });
     }
 
@@ -56,18 +56,19 @@ public final class ModuleManager {
      * Removes all modules from the system by calling their deactivation methods.
      */
     private void unloadModules() {
-        this.modules.forEach((moduleClass, customModuleInstance) -> {
+        modules.forEach((moduleClass, customModuleInstance) -> {
             customModuleInstance.deactivate();
         });
-        this.modules.clear();
+        modules.clear();
     }
 
     /**
      * Retrieves a specific module by its class.
+     *
      * @param moduleClass The class of the module to be retrieved.
      * @return The requested module if it exists, otherwise null.
      */
-    public Optional<CustomModule> getModule(@Nullable Class<? extends CustomModule> moduleClass) {
+    public @NotNull Optional<CustomModule> getModule(@Nullable Class<? extends CustomModule> moduleClass) {
         return Optional.ofNullable(modules.get(moduleClass));
     }
 }

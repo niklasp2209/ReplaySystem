@@ -46,7 +46,7 @@ public class ReplayCamerasMenu extends MultiMenu {
     }
 
     @Override
-    public void onItemInteraction(@NotNull InventoryClickEvent event)  {
+    public void onItemInteraction(@NotNull InventoryClickEvent event) {
         if (event.getCurrentItem() == null || !event.getCurrentItem().hasItemMeta()) {
             return;
         }

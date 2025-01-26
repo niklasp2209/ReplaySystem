@@ -6,13 +6,14 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
 public class ItemUtil {
 
     private final @NotNull ItemStack itemStack;
-    private final ItemMeta itemMeta;
+    private final @NotNull ItemMeta itemMeta;
 
     /**
      * Constructs an ItemBuilder with the specified material.
@@ -21,7 +22,7 @@ public class ItemUtil {
      */
     public ItemUtil(@NotNull Material material) {
         this.itemStack = new ItemStack(material);
-        this.itemMeta = this.itemStack.getItemMeta();
+        this.itemMeta = itemStack.getItemMeta();
     }
 
     /**
@@ -31,7 +32,7 @@ public class ItemUtil {
      * @return The current ItemBuilder instance for chaining.
      */
     public @NotNull ItemUtil setDisplayname(@NotNull final String name) {
-        this.itemMeta.setDisplayName(name);
+        itemMeta.setDisplayName(name);
         return this;
     }
 
@@ -43,8 +44,8 @@ public class ItemUtil {
      * @return The current ItemBuilder instance for chaining.
      */
     public @NotNull ItemUtil addEnchantment(@NotNull Enchantment enchantment, int level) {
-        this.itemMeta.addEnchant(enchantment, level, true);
-        this.itemStack.addUnsafeEnchantment(enchantment, level);
+        itemMeta.addEnchant(enchantment, level, true);
+        itemStack.addUnsafeEnchantment(enchantment, level);
         return this;
     }
 
@@ -55,7 +56,7 @@ public class ItemUtil {
      * @return The current ItemBuilder instance for chaining.
      */
     public @NotNull ItemUtil setAmount(final int amount) {
-        this.itemStack.setAmount(amount);
+        itemStack.setAmount(amount);
         return this;
     }
 
@@ -66,7 +67,7 @@ public class ItemUtil {
      * @return The current ItemBuilder instance for chaining.
      */
     public @NotNull ItemUtil setLore(@NotNull final String... lore) {
-        this.itemMeta.setLore(Arrays.asList(lore));
+        itemMeta.setLore(Arrays.asList(lore));
         return this;
     }
 
@@ -74,7 +75,7 @@ public class ItemUtil {
      * Makes the item unbreakable.
      */
     public @NotNull ItemUtil setUnbreakable() {
-        this.itemMeta.setUnbreakable(true);
+        itemMeta.setUnbreakable(true);
         return this;
     }
 
@@ -82,8 +83,8 @@ public class ItemUtil {
      * Makes the item glow by adding a hidden enchantment.
      */
     public @NotNull ItemUtil setGlowing() {
-        this.itemMeta.addEnchant(Enchantment.UNBREAKING, 0, true);
-        this.itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        itemMeta.addEnchant(Enchantment.UNBREAKING, 0, true);
+        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         return this;
     }
 
@@ -93,7 +94,7 @@ public class ItemUtil {
      * @return The resulting ItemStack.
      */
     public @NotNull ItemStack build() {
-        this.itemStack.setItemMeta(this.itemMeta);
-        return this.itemStack;
+        itemStack.setItemMeta(itemMeta);
+        return itemStack;
     }
 }

@@ -33,7 +33,7 @@ public class BlockPlaceRecordable extends Recordable {
      * a block change packet.
      *
      * @param replay the replay instance handling the replay process
-     * @param user the user to whom the block change should be sent
+     * @param user   the user to whom the block change should be sent
      */
     @Override
     public void replay(@NotNull Replay replay, @NotNull User user) {

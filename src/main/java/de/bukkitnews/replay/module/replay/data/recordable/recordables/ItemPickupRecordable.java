@@ -24,7 +24,7 @@ public class ItemPickupRecordable extends Recordable {
      * Replays the item pickup action by sending the collect item packet.
      *
      * @param replay the replay instance handling the replay process
-     * @param user the user to whom the packet should be sent
+     * @param user   the user to whom the packet should be sent
      */
     @Override
     public void replay(@NotNull Replay replay, @NotNull User user) {

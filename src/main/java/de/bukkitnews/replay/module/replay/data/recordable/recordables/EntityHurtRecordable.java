@@ -27,13 +27,13 @@ public class EntityHurtRecordable extends Recordable {
      * Replays the entity hurt action by sending a hurt animation packet.
      *
      * @param replay the replay instance handling the replay process
-     * @param user the user to whom the hurt animation packet should be sent
+     * @param user   the user to whom the hurt animation packet should be sent
      */
     @Override
     public void replay(@NotNull Replay replay, @NotNull User user) {
         Optional<Integer> entityOptional = Optional.ofNullable(replay.getSpawnedEntities().get(bukkitEntityId));
 
-        if(entityOptional.isEmpty()){
+        if (entityOptional.isEmpty()) {
             return;
         }
 

@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * This is the main class for the "ReplaySystem" plugin,
  * developed as part of the BukkitNews project.
  * Source: <a href="https://hypixel.net/threads/dev-blog-10-replay-system-technical-rundown.3234748/">...</a>
- *
+ * <p>
  * Created on: 11.12.2024
  */
 @Getter
@@ -23,14 +23,15 @@ public class ReplaySystem extends JavaPlugin {
 
     private ModuleManager moduleManager;
 
-    @Setter private MongoConnectionManager mongoConnectionManager;
+    @Setter
+    private MongoConnectionManager mongoConnectionManager;
 
     /**
      * This method is called when the server starts and the plugin is loaded.
      * It initializes configuration managers, loads messages, and prepares mongodb and module managers.
      */
     @Override
-    public void onLoad(){
+    public void onLoad() {
         this.mongoConfig = new ConfigManager(this, "database.yml");
         this.messagesConfig = new ConfigManager(this, "messages.yml");
         MessageUtil.loadMessages(messagesConfig);
@@ -39,12 +40,12 @@ public class ReplaySystem extends JavaPlugin {
     }
 
     @Override
-    public void onEnable(){
-        this.moduleManager.activateModules();
+    public void onEnable() {
+        moduleManager.activateModules();
     }
 
     @Override
-    public void onDisable(){
-        this.moduleManager.deactivateModules();
+    public void onDisable() {
+        moduleManager.deactivateModules();
     }
 }

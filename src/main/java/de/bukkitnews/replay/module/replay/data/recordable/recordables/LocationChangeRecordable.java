@@ -29,11 +29,11 @@ public class LocationChangeRecordable extends Recordable {
      * Sends teleport and head look packets to the user.
      *
      * @param replay the replay instance handling the replay process
-     * @param user the user to whom the packets should be sent
+     * @param user   the user to whom the packets should be sent
      */
     @Override
     public void replay(@NotNull Replay replay, @NotNull User user) {
-        if(location == null){
+        if (location == null) {
             return;
         }
 

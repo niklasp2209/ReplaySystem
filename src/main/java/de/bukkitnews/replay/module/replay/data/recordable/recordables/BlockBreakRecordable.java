@@ -33,7 +33,7 @@ public class BlockBreakRecordable extends Recordable {
      */
     @Override
     public void replay(@NotNull Replay replay, @NotNull User user) {
-        if(location == null){
+        if (location == null) {
             return;
         }
 

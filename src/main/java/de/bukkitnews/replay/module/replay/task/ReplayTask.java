@@ -47,7 +47,7 @@ public class ReplayTask extends BukkitRunnable {
 
         replay.getPlayer().setExp((float) currentTick / replay.getRecording().getTickDuration());
         Optional.ofNullable(replay.getRecordableQueue().poll()).ifPresentOrElse(tickRecordables ->
-                tickRecordables.forEach(recordable -> recordable.replay(replay, user)),
+                        tickRecordables.forEach(recordable -> recordable.replay(replay, user)),
                 () -> System.out.println("No recordables for tick " + currentTick)
         );
 
