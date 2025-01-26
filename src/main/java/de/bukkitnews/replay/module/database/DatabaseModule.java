@@ -11,19 +11,14 @@ public class DatabaseModule extends CustomModule {
 
     private MongoConnectionManager mongoConnectionManager;
 
-    public DatabaseModule(@NotNull ReplaySystem replaySystem){
+    public DatabaseModule(@NotNull ReplaySystem replaySystem) {
         super(replaySystem, "Database");
     }
 
     @Override
     public void activate() {
-        try {
-            mongoConnectionManager = new MongoConnectionManager(this.getReplaySystem().getMongoConfig());
-            this.getReplaySystem().getLogger().info("MongoDB connection initialized successfully!");
-        } catch (Exception exception){
-            this.getReplaySystem().getLogger().severe("Failed to initialize MongoDB connection: " + exception.getMessage());
-            this.getReplaySystem().getServer().getPluginManager().disablePlugin(this.getReplaySystem());
-        }
+        mongoConnectionManager = new MongoConnectionManager(this.getReplaySystem().getMongoConfig());
+        this.getReplaySystem().getLogger().info("MongoDB connection initialized successfully!");
 
         getReplaySystem().setMongoConnectionManager(mongoConnectionManager);
 
@@ -31,6 +26,6 @@ public class DatabaseModule extends CustomModule {
 
     @Override
     public void deactivate() {
-
+        mongoConnectionManager.close();
     }
 }

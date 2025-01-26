@@ -1,25 +1,25 @@
-package de.bukkitnews.replay.module.replay.database.objects;
+package de.bukkitnews.replay.module.replay.data.recordable;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import de.bukkitnews.replay.module.database.AbstractMongoRepository;
-import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
-import lombok.NonNull;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RecordableRepository extends AbstractMongoRepository<Recordable> {
 
-    public RecordableRepository(@NonNull MongoCollection<Recordable> collection) {
+    public RecordableRepository(@NotNull MongoCollection<Recordable> collection) {
         super(collection);
     }
 
 
     @Override
-    public Recordable findById(@NonNull ObjectId id) {
+    public @Nullable Recordable findById(@NotNull ObjectId id) {
         return collection.find(Filters.eq("_id", id)).first();
     }
 
@@ -31,7 +31,7 @@ public class RecordableRepository extends AbstractMongoRepository<Recordable> {
      * @param endTick   The end of the tick range.
      * @return A list of matching recordables, sorted by tick.
      */
-    public List<Recordable> findByRecordingIdAndTickBetween(@NonNull ObjectId id, long startTick, long endTick) {
+    public @NotNull List<Recordable> findInTickRange(@NotNull ObjectId id, long startTick, long endTick) {
         return List.copyOf(collection.find(Filters.and(
                         Filters.eq("recordingId", id),
                         Filters.gte("tick", startTick),
@@ -40,12 +40,12 @@ public class RecordableRepository extends AbstractMongoRepository<Recordable> {
                 .into(new ArrayList<>()));
     }
 
-    public void insertMany(@NonNull List<Recordable> recordables) {
+    public void insertMany(@NotNull List<Recordable> recordables) {
         collection.insertMany(recordables);
     }
 
     @Override
-    protected ObjectId extractId(@NonNull Recordable entity) {
+    protected ObjectId extractId(@NotNull Recordable entity) {
         return entity.getId();
     }
 }

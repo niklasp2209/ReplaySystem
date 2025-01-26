@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,16 +14,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 public class RecordingArea {
 
-    private ObjectId id;
-    private String name;
-    private UUID owner;
-    private Optional<Location> corner1 = Optional.empty();
-    private Optional<Location> corner2 = Optional.empty();
+    private @NotNull ObjectId id;
+    private final @NotNull String name;
+    private final @NotNull UUID owner;
+    private @NotNull Optional<Location> corner1 = Optional.empty();
+    private @NotNull Optional<Location> corner2 = Optional.empty();
 
-    public RecordingArea(String name, UUID owner) {
+    public RecordingArea(@NotNull String name, @NotNull UUID owner) {
         this.name = name;
         this.owner = owner;
     }
@@ -50,6 +50,7 @@ public class RecordingArea {
         double x = location.getX();
         double y = location.getY();
         double z = location.getZ();
+
         return x >= Math.min(x1, x2) && x <= Math.max(x1, x2) &&
                 y >= Math.min(y1, y2) && y <= Math.max(y1, y2) &&
                 z >= Math.min(z1, z2) && z <= Math.max(z1, z2);
@@ -85,8 +86,7 @@ public class RecordingArea {
         for (int x = startX; x <= endX; x++) {
             for (int y = startY; y <= endY; y++) {
                 for (int z = startZ; z <= endZ; z++) {
-                    Material material = world.getBlockAt(x, y, z).getType();
-                    materials.add(material);
+                    materials.add(world.getBlockAt(x, y, z).getType());
                 }
             }
         }

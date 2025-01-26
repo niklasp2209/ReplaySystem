@@ -26,8 +26,15 @@ public class CameraTrackingTask implements Runnable {
      */
     @Override
     public void run() {
-        Location corner1 = activeRecording.getRecordingArea().getCorner1();
-        Location corner2 = activeRecording.getRecordingArea().getCorner2();
+        Optional<Location> corner1Opt = activeRecording.getRecordingArea().getCorner1();
+        Optional<Location> corner2Opt = activeRecording.getRecordingArea().getCorner2();
+
+        if (corner1Opt.isEmpty() || corner2Opt.isEmpty()) {
+            return;
+        }
+
+        Location corner1 = corner1Opt.get();
+        Location corner2 = corner2Opt.get();
 
         Chunk[] loadedChunks = corner1.getWorld().getLoadedChunks();
         List<Chunk> chunksInRegion = new ArrayList<>();

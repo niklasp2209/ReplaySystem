@@ -8,6 +8,7 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public class ItemStackCodec implements Codec<ItemStack> {
 
     @Override
-    public ItemStack decode(@NonNull BsonReader bsonReader, @NonNull DecoderContext decoderContext) {
+    public @NotNull ItemStack decode(@NotNull BsonReader bsonReader, @NotNull DecoderContext decoderContext) {
         bsonReader.readStartDocument();
         String materialName = bsonReader.readString("type");
         int amount = bsonReader.readInt32("amount");
@@ -31,7 +32,7 @@ public class ItemStackCodec implements Codec<ItemStack> {
     }
 
     @Override
-    public void encode(@NonNull BsonWriter bsonWriter, @Nullable ItemStack itemStack, @NonNull EncoderContext encoderContext) {
+    public void encode(@NotNull BsonWriter bsonWriter, @Nullable ItemStack itemStack, @NotNull EncoderContext encoderContext) {
         if (itemStack == null) {
             throw new IllegalArgumentException("ItemStack cannot be null during encoding.");
         }
@@ -43,7 +44,7 @@ public class ItemStackCodec implements Codec<ItemStack> {
     }
 
     @Override
-    public Class<ItemStack> getEncoderClass() {
+    public @NotNull Class<ItemStack> getEncoderClass() {
         return ItemStack.class;
     }
 }

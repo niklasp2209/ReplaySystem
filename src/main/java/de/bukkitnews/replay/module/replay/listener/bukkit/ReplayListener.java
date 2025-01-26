@@ -1,22 +1,22 @@
 package de.bukkitnews.replay.module.replay.listener.bukkit;
 
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
-import de.bukkitnews.replay.module.replay.handle.ReplayHandler;
-import lombok.NonNull;
+import de.bukkitnews.replay.module.replay.handler.ReplayHandler;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
+@RequiredArgsConstructor
 public class ReplayListener implements Listener {
 
-    @NonNull private final ReplayHandler replayHandler;
-
-    public ReplayListener(@NonNull ReplayHandler replayHandler) {
-        this.replayHandler = replayHandler;
-    }
+    private final @NotNull ReplayHandler replayHandler;
 
     /**
      * Handles right-click actions on air or block to control the replay.
@@ -24,23 +24,25 @@ public class ReplayListener implements Listener {
      * @param event The PlayerInteractEvent triggered by the player.
      */
     @EventHandler
-    public void handleRightClick(@NonNull PlayerInteractEvent event) {
+    public void handleRightClick(@NotNull PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
 
         Player player = event.getPlayer();
-        Replay replay = replayHandler.getReplayForPlayer(player);
-
-        if (replay == null) {
+        Optional<Replay> replayOpt = replayHandler.getReplayForPlayer(player);
+        if (replayOpt.isEmpty()) {
             return;
         }
 
-        ItemStack item = event.getItem();
+        Replay replay = replayOpt.get();
 
+        ItemStack item = event.getItem();
         if (item == null) {
             return;
         }
+
+        event.setCancelled(true);
 
         switch (item.getType()) {
             case REPEATER:
@@ -55,10 +57,6 @@ public class ReplayListener implements Listener {
             case LIME_BANNER:
                 replayHandler.stopReplay(replay);
                 break;
-            default:
-                return;
         }
-
-        event.setCancelled(true);
     }
 }

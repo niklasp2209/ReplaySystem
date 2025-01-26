@@ -13,7 +13,7 @@ import java.util.Map;
 @UtilityClass
 public class InventoryUtil {
 
-    private static final @NotNull Map<Player, MenuUtil> playerMenuUtilityMap = new HashMap<>();
+    private static final @NotNull Map<Player, MenuUtil> PLAYER_MENU_UTIL_MAP = new HashMap<>();
 
     /**
      * Opens a menu for a player.
@@ -40,6 +40,6 @@ public class InventoryUtil {
      * @return The PlayerMenuUtility associated with the player.
      */
     public static MenuUtil getPlayerMenuUtility(@NotNull Player player) {
-        return playerMenuUtilityMap.computeIfAbsent(player, MenuUtil::new);
+        return PLAYER_MENU_UTIL_MAP.computeIfAbsent(player, MenuUtil::new);
     }
 }

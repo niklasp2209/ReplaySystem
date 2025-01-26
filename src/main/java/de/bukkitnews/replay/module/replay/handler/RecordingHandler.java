@@ -1,4 +1,4 @@
-package de.bukkitnews.replay.module.replay.handle;
+package de.bukkitnews.replay.module.replay.handler;
 
 import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.ReplayModule;
@@ -6,10 +6,9 @@ import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.data.recording.Recording;
-import de.bukkitnews.replay.module.replay.database.objects.RecordableRepository;
-import de.bukkitnews.replay.module.replay.database.objects.RecordingRepository;
+import de.bukkitnews.replay.module.replay.data.recordable.RecordableRepository;
+import de.bukkitnews.replay.module.replay.data.recording.RecordingRepository;
 import de.bukkitnews.replay.module.replay.task.TickTrackerTask;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
@@ -22,11 +21,11 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RecordingHandler {
 
-    private final RecordingRepository recordingRepository;
-    private final RecordableRepository recordableRepository;
+    private final @NotNull RecordingRepository recordingRepository;
+    private final @NotNull RecordableRepository recordableRepository;
     private final @NotNull ReplayModule replayModule;
 
-    private final List<ActiveRecording> activeRecordings = new ArrayList<>();
+    private final @NotNull List<ActiveRecording> activeRecordings = new ArrayList<>();
     private static final int MAX_RECORDABLES = 250;
 
     /**
@@ -35,7 +34,7 @@ public class RecordingHandler {
      * @param player the player whose active recording to find
      * @return the active recording, if any, for the player
      */
-    public Optional<ActiveRecording> getPlayerActiveRecording(Player player) {
+    public @NotNull Optional<ActiveRecording> getPlayerActiveRecording(Player player) {
         return activeRecordings.stream()
                 .filter(recording -> recording.getRecording().getOwner().equals(player.getUniqueId()))
                 .findFirst();
@@ -47,7 +46,7 @@ public class RecordingHandler {
      * @param entity the entity being tracked
      * @return the active recording, if any, for the entity
      */
-    public Optional<ActiveRecording> getEntities(Entity entity) {
+    public @NotNull Optional<ActiveRecording> getEntities(Entity entity) {
         return activeRecordings.stream()
                 .filter(recording -> recording.isEntityBeingTracked(entity.getUniqueId()))
                 .findFirst();
@@ -56,13 +55,12 @@ public class RecordingHandler {
     /**
      * Starts recording for a player with the specified camera.
      *
-     * @param player the player who starts recording
+     * @param player        the player who starts recording
      * @param recordingArea the camera used to record
      */
-    public void startRecording(Player player, @NonNull RecordingArea recordingArea) {
+    public void startRecording(@NotNull Player player, @NotNull RecordingArea recordingArea) {
         ActiveRecording activeRecording = new ActiveRecording(replayModule, recordingArea, player);
         activeRecordings.add(activeRecording);
-
         recordingRepository.insert(activeRecording.getRecording());
 
         player.sendMessage(MessageUtil.getMessage("recording_started1", recordingArea.getName()));
@@ -74,9 +72,8 @@ public class RecordingHandler {
      *
      * @param player the player who is stopping the recording
      */
-    public void stopRecording(Player player) {
+    public void stopRecording(@NotNull Player player) {
         Optional<ActiveRecording> activeRecordingOpt = getPlayerActiveRecording(player);
-
         if (activeRecordingOpt.isEmpty()) {
             player.sendMessage(MessageUtil.getMessage("recording_stop_no"));
             return;
@@ -97,9 +94,9 @@ public class RecordingHandler {
      * If the buffer exceeds the maximum size, flushes the recordables.
      *
      * @param activeRecording the active recording
-     * @param recordable the recordable object to add
+     * @param recordable      the recordable object to add
      */
-    public void addRecordable(@NonNull ActiveRecording activeRecording, Recordable recordable) {
+    public void addRecordable(@NotNull ActiveRecording activeRecording, @NotNull Recordable recordable) {
         Recording recording = activeRecording.getRecording();
         long currentTick = TickTrackerTask.getCurrentTick() - recording.getStartTick();
 
@@ -117,17 +114,16 @@ public class RecordingHandler {
      *
      * @param activeRecording the active recording whose buffer to flush
      */
-    public void flushRecordables(@NonNull ActiveRecording activeRecording) {
+    public void flushRecordables(@NotNull ActiveRecording activeRecording) {
         Bukkit.getScheduler().runTaskAsynchronously(replayModule.getReplaySystem(), () -> {
-            Queue<Recordable> bufferCopy;
+            List<Recordable> bufferCopy;
             synchronized (this) {
                 bufferCopy = new LinkedList<>(activeRecording.getRecordableBuffer());
                 activeRecording.getRecordableBuffer().clear();
             }
-            List<Recordable> listToFlush = new ArrayList<>(bufferCopy);
-            recordableRepository.insertMany(listToFlush);
+
+            recordableRepository.insertMany(bufferCopy);
             activeRecording.completeBufferProcessing();
-            System.out.println("Flushed RecordableBuffer");
         });
     }
 
@@ -137,7 +133,7 @@ public class RecordingHandler {
      * @param recordingArea the camera whose recordings to find
      * @return the list of recordings for the camera
      */
-    public List<Recording> getRecordingsForCamera(@NonNull RecordingArea recordingArea) {
+    public @NotNull List<Recording> getRecordingsForCamera(@NotNull RecordingArea recordingArea) {
         return recordingRepository.getCameraRecordings(recordingArea.getId());
     }
 
@@ -147,7 +143,7 @@ public class RecordingHandler {
      * @param id the ID of the recording
      * @return the recording if found, otherwise null
      */
-    public Recording findById(@NonNull String id) {
+    public @NotNull Recording findById(@NotNull String id) {
         return recordingRepository.findById(new ObjectId(id));
     }
 }

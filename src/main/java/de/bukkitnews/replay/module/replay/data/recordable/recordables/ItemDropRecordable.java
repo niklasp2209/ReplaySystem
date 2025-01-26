@@ -14,6 +14,8 @@ import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -27,54 +29,51 @@ import java.util.concurrent.atomic.AtomicInteger;
 @BsonDiscriminator(key = "type", value = "ItemDrop")
 public class ItemDropRecordable extends Recordable {
 
-    private UUID bukkitEntityId;
-    private Location location;
-    private ItemStack itemStack;
+    private @NotNull UUID bukkitEntityId;
+    private @Nullable Location location;
+    private @Nullable ItemStack itemStack;
 
     /**
      * Replays the item drop action by spawning the item and sending metadata.
      *
      * @param replay the replay instance handling the replay process
-     * @param user the user to whom the item drop packets should be sent
-     * @throws EntityCreationException if an error occurs while creating the entity
+     * @param user   the user to whom the item drop packets should be sent
      */
+    @SneakyThrows
     @Override
-    public void replay(@NonNull Replay replay, @NonNull User user) throws EntityCreationException {
-        try {
-            int entityId = generateEntityId();
+    public void replay(@NotNull Replay replay, @NotNull User user) {
+        int entityId = generateEntityId();
 
-            WrapperPlayServerSpawnEntity spawnEntityPacket = new WrapperPlayServerSpawnEntity(
-                    entityId, UUID.randomUUID(), EntityTypes.ITEM,
-                    SpigotConversionUtil.fromBukkitLocation(location),
-                    0, 0, null);
-
-            WrapperPlayServerEntityMetadata metadataPacket = new WrapperPlayServerEntityMetadata(
-                    entityId, List.of(new EntityData(0, EntityDataTypes.ITEMSTACK,
-                    SpigotConversionUtil.fromBukkitItemStack(itemStack))));
-
-            user.sendPacket(spawnEntityPacket);
-            replay.getSpawnedEntities().put(bukkitEntityId, entityId);
-            user.sendPacket(metadataPacket);
-
-        } catch (Exception e) {
-            throw new EntityCreationException("Error creating entity for item drop: " + e.getMessage(), e);
+        if (location == null || itemStack == null) {
+            return;
         }
+
+        replay.getSpawnedEntities().put(bukkitEntityId, entityId);
+
+        user.sendPacket(new WrapperPlayServerSpawnEntity(
+                entityId, UUID.randomUUID(), EntityTypes.ITEM,
+                SpigotConversionUtil.fromBukkitLocation(location),
+                0, 0, null));
+        user.sendPacket(new WrapperPlayServerEntityMetadata(
+                entityId, List.of(new EntityData(0, EntityDataTypes.ITEMSTACK,
+                SpigotConversionUtil.fromBukkitItemStack(itemStack)))));
     }
 
     /**
      * Generates a unique entity ID for the item drop.
      *
      * @return the generated entity ID
-     * @throws EntityCreationException if the entity ID generation fails
      */
     private int generateEntityId() throws EntityCreationException {
         try {
             Class<?> entityClass = Class.forName("net.minecraft.world.entity.Entity");
             Field field = entityClass.getDeclaredField("c");
             field.setAccessible(true);
+
             AtomicInteger ENTITY_COUNTER = (AtomicInteger) field.get(null);
             return ENTITY_COUNTER.incrementAndGet();
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | NoSuchFieldException |
+                 IllegalAccessException e) {
             throw new EntityCreationException("Failed to generate entity ID", e);
         }
     }

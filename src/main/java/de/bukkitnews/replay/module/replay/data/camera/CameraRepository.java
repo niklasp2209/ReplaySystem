@@ -1,11 +1,11 @@
-package de.bukkitnews.replay.module.replay.database.objects;
+package de.bukkitnews.replay.module.replay.data.camera;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import de.bukkitnews.replay.module.database.AbstractMongoRepository;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
-import lombok.NonNull;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,12 @@ import java.util.UUID;
 
 public class CameraRepository extends AbstractMongoRepository<RecordingArea> {
 
-    public CameraRepository(@NonNull MongoCollection<RecordingArea> collection) {
+    public CameraRepository(@NotNull MongoCollection<RecordingArea> collection) {
         super(collection);
     }
 
     @Override
-    protected ObjectId extractId(@NonNull RecordingArea entity) {
+    protected @NotNull ObjectId extractId(@NotNull RecordingArea entity) {
         return entity.getId();
     }
 
@@ -28,7 +28,7 @@ public class CameraRepository extends AbstractMongoRepository<RecordingArea> {
      * @param owner The UUID of the owner.
      * @return A list of RecordingArea entities owned by the user.
      */
-    public List<RecordingArea> findAllByOwnerId(@NonNull UUID owner) {
+    public @NotNull List<RecordingArea> findAllByOwnerId(@NotNull UUID owner) {
         return List.copyOf(collection.find(Filters.eq("owner", owner)).into(new ArrayList<>()));
     }
 }

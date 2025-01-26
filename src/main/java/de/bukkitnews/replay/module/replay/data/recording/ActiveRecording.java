@@ -20,23 +20,23 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Data
 public class ActiveRecording {
 
-    private Recording recording;
-    private RecordingArea recordingArea;
-    private final Queue<UUID> recordableEntities;
-    private BukkitTask trackLocationTask;
-    private BukkitTask scanEntitiesTask;
-    private BukkitTask trackEquipmentTask;
-    private Queue<Recordable> recordableBuffer = new ConcurrentLinkedQueue<>();
-    private volatile boolean isProcessingBuffer = false;
+    private final @NotNull Recording recording;
+    private final @NotNull RecordingArea recordingArea;
+    private final @NotNull Queue<UUID> recordableEntities;
+    private final @NotNull BukkitTask trackLocationTask;
+    private final @NotNull BukkitTask scanEntitiesTask;
+    private final @NotNull BukkitTask trackEquipmentTask;
+    private final @NotNull Queue<Recordable> recordableBuffer = new ConcurrentLinkedQueue<>();
     private final @NotNull ReplayModule replayModule;
+    private volatile boolean isProcessingBuffer = false;
 
     /**
      * Creates a new active recording for the given camera and owner.
      *
      * @param recordingArea The camera being used for recording.
-     * @param owner  The player who owns this recording.
+     * @param owner         The player who owns this recording.
      */
-    public ActiveRecording(@NotNull ReplayModule replayModule, RecordingArea recordingArea, Player owner) {
+    public ActiveRecording(@NotNull ReplayModule replayModule, @NotNull RecordingArea recordingArea, @NotNull Player owner) {
         this.replayModule = replayModule;
         this.recording = new Recording(recordingArea, owner);
         this.recordingArea = recordingArea;
@@ -73,6 +73,7 @@ public class ActiveRecording {
         this.recording.setEndTick(TickTrackerTask.getCurrentTick());
         this.scanEntitiesTask.cancel();
         this.trackLocationTask.cancel();
+        this.trackEquipmentTask.cancel();
     }
 
     /**
@@ -123,6 +124,7 @@ public class ActiveRecording {
         if (isProcessingBuffer) {
             return false;
         }
+
         isProcessingBuffer = true;
         return true;
     }

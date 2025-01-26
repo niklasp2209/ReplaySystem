@@ -8,7 +8,6 @@ import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.SetEquipmentRecordable;
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.SwingHandRecordable;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,11 +26,10 @@ public class ReplayPacketListener implements PacketListener {
      * @param event The PacketReceiveEvent triggered by the player action.
      */
     @Override
-    public void onPacketReceive(@NonNull PacketReceiveEvent event) {
-        Player player = (Player) event.getPlayer();
+    public void onPacketReceive(@NotNull PacketReceiveEvent event) {
+        Player player = event.getPlayer();
 
         Optional<ActiveRecording> activeRecordingOpt = replayModule.getRecordingHandler().getPlayerActiveRecording(player);
-
         if (activeRecordingOpt.isEmpty()) {
             return;
         }
@@ -42,8 +40,8 @@ public class ReplayPacketListener implements PacketListener {
             WrapperPlayClientAnimation playClientAnimation = new WrapperPlayClientAnimation(event);
             SwingHandRecordable swingHandRecordable = new SwingHandRecordable(player.getUniqueId(), playClientAnimation.getHand().getId());
             replayModule.getRecordingHandler().addRecordable(activeRecording, swingHandRecordable);
-        }
-        else if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) {
+
+        } else if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) {
             if (player.getEquipment() == null) {
                 return;
             }

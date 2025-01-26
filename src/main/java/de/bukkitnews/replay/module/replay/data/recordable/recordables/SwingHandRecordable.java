@@ -2,11 +2,11 @@ package de.bukkitnews.replay.module.replay.data.recordable.recordables;
 
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityAnimation;
-import de.bukkitnews.replay.exception.EntityNotFoundException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -17,7 +17,7 @@ import java.util.UUID;
 @BsonDiscriminator(key = "type", value = "SwingHand")
 public class SwingHandRecordable extends Recordable {
 
-    private UUID bukkitEntityId;
+    private @NotNull UUID bukkitEntityId;
     private int handId;
 
     /**
@@ -25,20 +25,15 @@ public class SwingHandRecordable extends Recordable {
      *
      * @param replay the replay instance
      * @param user   the user receiving the packet
-     * @throws EntityNotFoundException if an error occurs during replay
      */
     @Override
-    public void replay(@NonNull Replay replay, @NonNull User user) throws EntityNotFoundException {
+    public void replay(@NotNull Replay replay, @NotNull User user) {
         Integer entityId = replay.getSpawnedEntities().get(bukkitEntityId);
 
-        if (entityId == null) {
-            throw new EntityNotFoundException("Entity with the given bukkitEntityId not found in replay.");
-        }
+        WrapperPlayServerEntityAnimation.EntityAnimationType entityAnimation = handId == 0
+                ? WrapperPlayServerEntityAnimation.EntityAnimationType.SWING_MAIN_ARM
+                : WrapperPlayServerEntityAnimation.EntityAnimationType.SWING_OFF_HAND;
 
-        WrapperPlayServerEntityAnimation.EntityAnimationType entityAnimation = handId == 0 ? WrapperPlayServerEntityAnimation.EntityAnimationType.SWING_MAIN_ARM :
-                WrapperPlayServerEntityAnimation.EntityAnimationType.SWING_OFF_HAND;
-
-        WrapperPlayServerEntityAnimation animationPacket = new WrapperPlayServerEntityAnimation(entityId, entityAnimation);
-        user.sendPacket(animationPacket);
+        user.sendPacket(new WrapperPlayServerEntityAnimation(entityId, entityAnimation));
     }
 }

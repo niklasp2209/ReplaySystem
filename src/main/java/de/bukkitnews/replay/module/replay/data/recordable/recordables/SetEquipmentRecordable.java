@@ -4,13 +4,13 @@ import com.github.retrooper.packetevents.protocol.player.Equipment;
 import com.github.retrooper.packetevents.protocol.player.EquipmentSlot;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityEquipment;
-import de.bukkitnews.replay.exception.EntityNotFoundException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -24,23 +24,22 @@ import java.util.UUID;
 @BsonDiscriminator(key = "type", value = "SetEquipment")
 public class SetEquipmentRecordable extends Recordable {
 
-    private UUID bukkitEntityId;
-    private ItemStack mainHand;
-    private ItemStack offHand;
-    private ItemStack helmet;
-    private ItemStack chest;
-    private ItemStack legs;
-    private ItemStack boots;
+    private @NotNull UUID bukkitEntityId;
+    private @Nullable ItemStack mainHand;
+    private @Nullable ItemStack offHand;
+    private @Nullable ItemStack helmet;
+    private @Nullable ItemStack chest;
+    private @Nullable ItemStack legs;
+    private @Nullable ItemStack boots;
 
     /**
      * Replays the equipment change for an entity by sending the appropriate packets.
      *
      * @param replay the replay instance that manages the replayed events
-     * @param user the user to whom the equipment change packets should be sent
-     * @throws EntityNotFoundException if the entity with the given bukkitEntityId is not found
+     * @param user   the user to whom the equipment change packets should be sent
      */
     @Override
-    public void replay(@NonNull Replay replay, @NonNull User user)  {
+    public void replay(@NotNull Replay replay, @NotNull User user) {
         Integer entityId = replay.getSpawnedEntities().get(bukkitEntityId);
 
         List<Equipment> equipment = new ArrayList<>();
@@ -51,20 +50,21 @@ public class SetEquipmentRecordable extends Recordable {
         addEquipmentToList(equipment, EquipmentSlot.LEGGINGS, legs);
         addEquipmentToList(equipment, EquipmentSlot.BOOTS, boots);
 
-        WrapperPlayServerEntityEquipment entityEquipmentPacket = new WrapperPlayServerEntityEquipment(entityId, equipment);
-        user.sendPacket(entityEquipmentPacket);
+        user.sendPacket(new WrapperPlayServerEntityEquipment(entityId, equipment));
     }
 
     /**
      * Adds an equipment item to the list if it is not null.
      *
      * @param equipmentList the list of equipment items
-     * @param slot the equipment slot for the item
-     * @param item the item to add to the equipment list
+     * @param slot          the equipment slot for the item
+     * @param item          the item to add to the equipment list
      */
-    private void addEquipmentToList(@NonNull List<Equipment> equipmentList, @NonNull EquipmentSlot slot, @Nullable ItemStack item) {
-        if (item != null) {
-            equipmentList.add(new Equipment(slot, SpigotConversionUtil.fromBukkitItemStack(item)));
+    private void addEquipmentToList(@NotNull List<Equipment> equipmentList, @NotNull EquipmentSlot slot, @Nullable ItemStack item) {
+        if (item == null) {
+            return;
         }
+
+        equipmentList.add(new Equipment(slot, SpigotConversionUtil.fromBukkitItemStack(item)));
     }
 }

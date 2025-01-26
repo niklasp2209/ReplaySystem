@@ -9,6 +9,8 @@ import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -19,8 +21,8 @@ import java.util.UUID;
 @BsonDiscriminator(key = "type", value = "LocationChange")
 public class LocationChangeRecordable extends Recordable {
 
-    private Location location;
-    private UUID bukkitEntityId;
+    private @Nullable Location location;
+    private @NotNull UUID bukkitEntityId;
 
     /**
      * Replays the location and head rotation change for an entity.
@@ -30,16 +32,16 @@ public class LocationChangeRecordable extends Recordable {
      * @param user the user to whom the packets should be sent
      */
     @Override
-    public void replay(@NonNull Replay replay, @NonNull User user) {
+    public void replay(@NotNull Replay replay, @NotNull User user) {
+        if(location == null){
+            return;
+        }
+
         Integer entityId = replay.getSpawnedEntities().get(bukkitEntityId);
 
-        WrapperPlayServerEntityTeleport movePacket = new WrapperPlayServerEntityTeleport(
-                entityId, SpigotConversionUtil.fromBukkitLocation(location), false);
-
-        WrapperPlayServerEntityHeadLook headLookPacket = new WrapperPlayServerEntityHeadLook(
-                entityId, location.getYaw());
-
-        user.sendPacket(movePacket);
-        user.sendPacket(headLookPacket);
+        user.sendPacket(new WrapperPlayServerEntityTeleport(
+                entityId, SpigotConversionUtil.fromBukkitLocation(location), false));
+        user.sendPacket(new WrapperPlayServerEntityHeadLook(
+                entityId, location.getYaw()));
     }
 }

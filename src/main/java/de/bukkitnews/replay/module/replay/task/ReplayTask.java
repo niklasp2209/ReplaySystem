@@ -4,10 +4,8 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.player.User;
 import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.ReplayModule;
-import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
-import de.bukkitnews.replay.module.replay.handle.ReplayHandler;
-import lombok.NonNull;
+import de.bukkitnews.replay.module.replay.handler.ReplayHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,11 +46,9 @@ public class ReplayTask extends BukkitRunnable {
         }
 
         replay.getPlayer().setExp((float) currentTick / replay.getRecording().getTickDuration());
-        Optional.ofNullable(replay.getRecordableQueue().poll()).ifPresentOrElse(tickRecordables -> {
-                    tickRecordables.forEach(recordable -> {
-                        recordable.replay(replay, user);
-                    });
-                }, () -> System.out.println("No recordables for tick " + currentTick)
+        Optional.ofNullable(replay.getRecordableQueue().poll()).ifPresentOrElse(tickRecordables ->
+                tickRecordables.forEach(recordable -> recordable.replay(replay, user)),
+                () -> System.out.println("No recordables for tick " + currentTick)
         );
 
         currentTick++;

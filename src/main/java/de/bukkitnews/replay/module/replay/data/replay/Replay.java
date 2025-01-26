@@ -26,13 +26,13 @@ import java.util.Optional;
 @Data
 public class Replay {
 
-    private final Player player;
-    private final Recording recording;
-    private final ReplayTask replayTask;
+    private final @NotNull Player player;
+    private final @NotNull Recording recording;
+    private final @NotNull ReplayTask replayTask;
     private final @NotNull ReplayModule replayModule;
 
-    private final Map<UUID, Integer> spawnedEntities = new ConcurrentHashMap<>();
-    private final Queue<List<Recordable>> recordableQueue = new ConcurrentLinkedQueue<>();
+    private final @NotNull Map<UUID, Integer> spawnedEntities = new ConcurrentHashMap<>();
+    private final @NotNull Queue<List<Recordable>> recordableQueue = new ConcurrentLinkedQueue<>();
     private volatile boolean loadingData = false;
 
     /**
@@ -40,15 +40,14 @@ public class Replay {
      * It also sets up the inventory items and starts the replay asynchronously.
      *
      * @param recording The recording associated with this replay.
-     * @param player The player who will be viewing the replay.
+     * @param player    The player who will be viewing the replay.
      */
-    public Replay(ReplayModule replayModule, Recording recording, Player player) {
+    public Replay(@NotNull ReplayModule replayModule, @NotNull Recording recording, @NotNull Player player) {
         this.replayModule = replayModule;
         this.recording = recording;
         this.player = player;
 
         player.getInventory().clear();
-
         setupInventory();
 
         player.sendMessage(MessageUtil.getMessage("replay_loading"));
@@ -72,11 +71,11 @@ public class Replay {
     /**
      * Helper method to create an item with a specific material and display name.
      *
-     * @param material The material of the item.
+     * @param material    The material of the item.
      * @param displayName The display name for the item.
      * @return The created item stack.
      */
-    private ItemStack createControlItem(Material material, String displayName) {
+    private @NotNull ItemStack createControlItem(Material material, String displayName) {
         return new ItemUtil(material).setDisplayname(displayName).build();
     }
 
@@ -105,7 +104,7 @@ public class Replay {
      * Ends the replay, cancels any active tasks, and clears the player's inventory.
      */
     public void endReplay() {
-        Optional.ofNullable(replayTask).ifPresent(ReplayTask::cancel);
+        Optional.of(replayTask).ifPresent(ReplayTask::cancel);
         player.getInventory().clear();
         player.setExp(0F); // Reset experience bar
     }
@@ -120,7 +119,7 @@ public class Replay {
         if (loadingData) {
             return false;
         }
-        loadingData = true;
+        this.loadingData = true;
         return true;
     }
 
@@ -128,6 +127,6 @@ public class Replay {
      * Marks the data loading process as complete.
      */
     public void doneLoadingData() {
-        loadingData = false;
+        this.loadingData = false;
     }
 }

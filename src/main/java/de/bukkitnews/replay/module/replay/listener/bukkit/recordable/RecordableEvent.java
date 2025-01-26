@@ -1,9 +1,8 @@
 package de.bukkitnews.replay.module.replay.listener.bukkit.recordable;
 
-import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.recording.ActiveRecording;
-import de.bukkitnews.replay.module.replay.handle.RecordingHandler;
+import de.bukkitnews.replay.module.replay.handler.RecordingHandler;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;

@@ -4,11 +4,11 @@ import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
-import de.bukkitnews.replay.exception.EntityNotFoundException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class SprintRecordable extends Recordable {
 
     private static final byte SPRINTING_FLAG = 0x08;
 
-    private UUID bukkitEntityId;
+    private @NotNull UUID bukkitEntityId;
     private boolean isSprinting;
 
     /**
@@ -31,20 +31,15 @@ public class SprintRecordable extends Recordable {
      *
      * @param replay the replay instance
      * @param user   the user receiving the packet
-     * @throws EntityNotFoundException if an error occurs during replay
      */
     @Override
-    public void replay(@NonNull Replay replay, @NonNull User user) throws EntityNotFoundException {
+    public void replay(@NotNull Replay replay, @NotNull User user) {
         Integer entityId = replay.getSpawnedEntities().get(bukkitEntityId);
-        if (entityId == null) {
-            throw new EntityNotFoundException("Entity with the given bukkitEntityId not found in replay.");
-        }
 
         List<EntityData> entityDataList = new ArrayList<>();
         byte sprintingByte = isSprinting ? SPRINTING_FLAG : 0;
         entityDataList.add(new EntityData(0, EntityDataTypes.BYTE, sprintingByte));
 
-        WrapperPlayServerEntityMetadata metadataPacket = new WrapperPlayServerEntityMetadata(entityId, entityDataList);
-        user.sendPacket(metadataPacket);
+        user.sendPacket(new WrapperPlayServerEntityMetadata(entityId, entityDataList));
     }
 }

@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -23,8 +25,8 @@ import org.bukkit.Material;
 @BsonDiscriminator(key = "type", value = "BlockPlace")
 public class BlockPlaceRecordable extends Recordable {
 
-    private Material material;
-    private Location location;
+    private @Nullable Material material;
+    private @Nullable Location location;
 
     /**
      * Replays the block placement action to the specified user by sending
@@ -32,19 +34,17 @@ public class BlockPlaceRecordable extends Recordable {
      *
      * @param replay the replay instance handling the replay process
      * @param user the user to whom the block change should be sent
-     * @throws IllegalArgumentException if material or location is null
      */
     @Override
-    public void replay(Replay replay, User user) throws IllegalArgumentException {
+    public void replay(@NotNull Replay replay, @NotNull User user) {
         if (material == null || location == null) {
-            throw new IllegalArgumentException("Material or Location cannot be null.");
+            return;
         }
 
         Vector3i position = new Vector3i(location.getBlockX(), location.getBlockY(), location.getBlockZ());
         StateType stateType = StateTypes.getByName("minecraft:" + material.name().toLowerCase());
         WrappedBlockState wrappedBlockState = WrappedBlockState.getDefaultState(stateType);
 
-        WrapperPlayServerBlockChange blockChangePacket = new WrapperPlayServerBlockChange(position, wrappedBlockState.getGlobalId());
-        user.sendPacket(blockChangePacket);
+        user.sendPacket(new WrapperPlayServerBlockChange(position, wrappedBlockState.getGlobalId()));
     }
 }

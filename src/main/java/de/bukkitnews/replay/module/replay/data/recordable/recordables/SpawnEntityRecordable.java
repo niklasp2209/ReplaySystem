@@ -4,6 +4,7 @@ import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnEntity;
 import com.mojang.authlib.GameProfile;
+import de.bukkitnews.replay.exception.EntityCreationException;
 import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
@@ -25,6 +26,8 @@ import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.Set;
@@ -38,16 +41,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 @BsonDiscriminator(key = "type", value = "SpawnEntity")
 public class SpawnEntityRecordable extends Recordable {
 
-    private EntityType entityType;
-    private Location location;
-    private UUID bukkitEntityId;
-    private String playerName;
+    private @NotNull EntityType entityType;
+    private @NotNull Location location;
+    private @NotNull UUID bukkitEntityId;
+    private @Nullable String playerName;
 
-    public SpawnEntityRecordable(@NonNull Entity entity) {
+    public SpawnEntityRecordable(@NotNull Entity entity) {
         this.entityType = entity.getType();
         this.location = entity.getLocation();
         this.bukkitEntityId = entity.getUniqueId();
-        if(this.entityType == EntityType.PLAYER){
+        if (entityType == EntityType.PLAYER) {
             this.playerName = entity.getName();
         }
     }
@@ -56,63 +59,73 @@ public class SpawnEntityRecordable extends Recordable {
      * Replays the entity spawn event by sending the appropriate spawn packet.
      *
      * @param replay the replay instance
-     * @param user the user receiving the packet
-     * @throws Exception if there is an issue during the replay
+     * @param user   the user receiving the packet
      */
     @Override
-    public void replay(@NonNull Replay replay, @NonNull User user) throws Exception {
-        if(entityType == EntityType.PLAYER){
-
-            Player player = replay.getPlayer();
-            CraftPlayer craftPlayer = (CraftPlayer) player;
-            ServerPlayer serverPlayer = craftPlayer.getHandle();
-            MinecraftServer minecraftServer = serverPlayer.getServer();
-            ServerLevel serverLevel = serverPlayer.serverLevel().getLevel();
-            GameProfile gameProfile = new GameProfile(UUID.randomUUID(), playerName);
-
-            ServerPlayer npc = new ServerPlayer(minecraftServer, serverLevel, gameProfile, ClientInformation.createDefault());
-            npc.setPos(location.getX(), location.getY(), location.getZ());
-
-            ServerGamePacketListenerImpl serverGamePacketListener = serverPlayer.connection;
-
-            SynchedEntityData synchedEntityData = npc.getEntityData();
-            synchedEntityData.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), (byte) 127);
-            setValue(npc, "c", ((CraftPlayer) player).getHandle().connection);
-
-
-            ServerEntity npcServerEntity = new ServerEntity(serverPlayer.serverLevel(), serverPlayer, 0, false, packet -> {
-            }, Set.of());
-            serverGamePacketListener.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, npc));
-            serverGamePacketListener.send(new ClientboundAddEntityPacket(npc, npcServerEntity));
-
-            replay.getSpawnedEntities().put(bukkitEntityId, npc.getId());
-
+    public void replay(@NotNull Replay replay, @NotNull User user) {
+        if (entityType == EntityType.PLAYER) {
+            replayPlayerSpawn(replay);
         } else {
-            Class<?> entityClass = Class.forName("net.minecraft.world.entity.Entity");
-            Field field = entityClass.getDeclaredField("c");
-            field.setAccessible(true);
-            AtomicInteger ENTITY_COUNTER = (AtomicInteger) field.get(null);
-            int entityId = ENTITY_COUNTER.incrementAndGet();
-
-            com.github.retrooper.packetevents.protocol.entity.type.EntityType entityType1 = EntityTypes.getByName(entityType.getKey().toString());
-
-            WrapperPlayServerSpawnEntity spawnEntityPacket = new WrapperPlayServerSpawnEntity(
-                    entityId, UUID.randomUUID(),
-                    entityType1, SpigotConversionUtil.fromBukkitLocation(location),
-                    0, 0, null);
-
-            user.sendPacket(spawnEntityPacket);
-            replay.getSpawnedEntities().put(bukkitEntityId, entityId);
+            try {
+                replayEntitySpawn(replay, user);
+            } catch (EntityCreationException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
-    private void setValue(@NonNull Object packet, @NonNull String fieldName, @NonNull Object value) {
+    private void replayPlayerSpawn(@NotNull Replay replay) {
+        ServerPlayer serverPlayer = ((CraftPlayer) replay.getPlayer()).getHandle();
+        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), playerName);
+
+        ServerPlayer npc = new ServerPlayer(
+                serverPlayer.getServer(), serverPlayer.serverLevel().getLevel(), gameProfile, ClientInformation.createDefault());
+        npc.setPos(location.getX(), location.getY(), location.getZ());
+
+        ServerGamePacketListenerImpl serverGamePacketListener = serverPlayer.connection;
+        SynchedEntityData synchedEntityData = npc.getEntityData();
+        synchedEntityData.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), (byte) 127);
+        setValue(npc, "c", serverPlayer.connection);
+
+        ServerEntity npcServerEntity = new ServerEntity(serverPlayer.serverLevel(), serverPlayer, 0, false, packet -> {
+        }, Set.of());
+        serverGamePacketListener.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, npc));
+        serverGamePacketListener.send(new ClientboundAddEntityPacket(npc, npcServerEntity));
+
+        replay.getSpawnedEntities().put(bukkitEntityId, npc.getId());
+    }
+
+    private void replayEntitySpawn(@NotNull Replay replay, @NotNull User user) throws EntityCreationException {
+        int entityId = generateEntityId();
+        com.github.retrooper.packetevents.protocol.entity.type.EntityType entityType1 = EntityTypes.getByName(entityType.getKey().toString());
+
+        user.sendPacket(new WrapperPlayServerSpawnEntity(
+                entityId, UUID.randomUUID(),
+                entityType1, SpigotConversionUtil.fromBukkitLocation(location),
+                0, 0, null));
+        replay.getSpawnedEntities().put(bukkitEntityId, entityId);
+    }
+
+    private int generateEntityId() throws EntityCreationException {
+        try {
+            Class<?> entityClass = Class.forName("net.minecraft.world.entity.Entity");
+            Field field = entityClass.getDeclaredField("c");
+            field.setAccessible(true);
+            AtomicInteger entityCounter = (AtomicInteger) field.get(null);
+            return entityCounter.incrementAndGet();
+        } catch (ClassNotFoundException | NoSuchFieldException |
+                 IllegalAccessException e) {
+            throw new EntityCreationException("Failed to generate entity ID", e);
+        }
+    }
+
+    private void setValue(@NotNull Object packet, @NotNull String fieldName, @NotNull Object value) {
         try {
             Field field = packet.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(packet, value);
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set value for field " + fieldName, e);
         }
     }
 }

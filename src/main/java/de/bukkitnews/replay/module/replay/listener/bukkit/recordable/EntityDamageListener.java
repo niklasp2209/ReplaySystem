@@ -1,7 +1,7 @@
 package de.bukkitnews.replay.module.replay.listener.bukkit.recordable;
 
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.EntityHurtRecordable;
-import de.bukkitnews.replay.module.replay.handle.RecordingHandler;
+import de.bukkitnews.replay.module.replay.handler.RecordingHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 

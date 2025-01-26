@@ -7,6 +7,7 @@ import org.bson.codecs.Codec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -16,7 +17,7 @@ import java.util.Objects;
 public class EntityTypeCodec implements Codec<EntityType> {
 
     @Override
-    public EntityType decode(@NonNull BsonReader bsonReader, @NonNull DecoderContext decoderContext) {
+    public @NotNull EntityType decode(@NotNull BsonReader bsonReader, @NotNull DecoderContext decoderContext) {
         bsonReader.readStartDocument();
         String entityTypeString = bsonReader.readString("entityType");
         bsonReader.readEndDocument();
@@ -29,7 +30,7 @@ public class EntityTypeCodec implements Codec<EntityType> {
     }
 
     @Override
-    public void encode(@NonNull BsonWriter bsonWriter, @NonNull EntityType entityType, @NonNull EncoderContext encoderContext) {
+    public void encode(@NotNull BsonWriter bsonWriter, @NotNull EntityType entityType, @NotNull EncoderContext encoderContext) {
         Objects.requireNonNull(entityType, "EntityType cannot be null");
 
         bsonWriter.writeStartDocument();
@@ -38,7 +39,7 @@ public class EntityTypeCodec implements Codec<EntityType> {
     }
 
     @Override
-    public Class<EntityType> getEncoderClass() {
+    public @NotNull Class<EntityType> getEncoderClass() {
         return EntityType.class;
     }
 }

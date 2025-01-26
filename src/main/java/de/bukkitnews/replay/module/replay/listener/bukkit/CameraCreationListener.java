@@ -5,7 +5,7 @@ import de.bukkitnews.replay.module.replay.region.RegionUtil;
 import de.bukkitnews.replay.module.replay.region.region.Region;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
-import de.bukkitnews.replay.module.replay.handle.CameraHandler;
+import de.bukkitnews.replay.module.replay.handler.CameraHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

@@ -1,4 +1,4 @@
-package de.bukkitnews.replay.module.replay.database.objects;
+package de.bukkitnews.replay.module.replay.data.recording;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -21,7 +21,7 @@ public class RecordingRepository extends AbstractMongoRepository<Recording> {
     }
 
     @Override
-    protected ObjectId extractId(@NotNull Recording entity) {
+    protected @NotNull ObjectId extractId(@NotNull Recording entity) {
         return entity.getId();
     }
 
@@ -31,7 +31,7 @@ public class RecordingRepository extends AbstractMongoRepository<Recording> {
      * @param cameraId The camera's ObjectId.
      * @return A list of recordings for the camera.
      */
-    public List<Recording> getCameraRecordings(@NotNull ObjectId cameraId) {
+    public @NotNull List<Recording> getCameraRecordings(@NotNull ObjectId cameraId) {
         return List.copyOf(collection.find(Filters.eq("cameraId", cameraId))
                 .sort(Sorts.descending("startTime"))
                 .into(new ArrayList<>()));

@@ -5,13 +5,13 @@ import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.ReplayModule;
 import de.bukkitnews.replay.module.replay.menu.recording.RecordCamerasMenu;
 import de.bukkitnews.replay.module.replay.menu.replay.ReplayCamerasMenu;
-import de.bukkitnews.replay.module.replay.handle.CameraHandler;
-import de.bukkitnews.replay.module.replay.handle.RecordingHandler;
-import lombok.NonNull;
+import de.bukkitnews.replay.module.replay.handler.CameraHandler;
+import de.bukkitnews.replay.module.replay.handler.RecordingHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Handles the "replay" command, providing functionalities such as
@@ -19,17 +19,17 @@ import org.bukkit.entity.Player;
  */
 public class ReplayCommand implements CommandExecutor {
 
-    @NonNull private final CameraHandler cameraHandler;
-    @NonNull private final RecordingHandler recordingHandler;
+    private final @NotNull CameraHandler cameraHandler;
+    private final @NotNull RecordingHandler recordingHandler;
 
-    public ReplayCommand() {
-        this.cameraHandler = ReplayModule.instance.getCameraHandler();
-        this.recordingHandler = ReplayModule.instance.getRecordingHandler();
+    public ReplayCommand(@NotNull ReplayModule replayModule) {
+        this.cameraHandler = replayModule.getCameraHandler();
+        this.recordingHandler = replayModule.getRecordingHandler();
     }
 
     @Override
-    public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label,
-                             @NonNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
+                             @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage("This command can only be executed by players.");
             return true;
@@ -56,7 +56,7 @@ public class ReplayCommand implements CommandExecutor {
      * @param player the player executing the command
      * @param args   the arguments passed with the command
      */
-    private void handleCreateCommand(@NonNull Player player, @NonNull String[] args) {
+    private void handleCreateCommand(@NotNull Player player, @NotNull String[] args) {
         if (!player.hasPermission("replay.command.create")) {
             player.sendMessage(MessageUtil.getMessage("noperm"));
             return;
@@ -77,17 +77,13 @@ public class ReplayCommand implements CommandExecutor {
      *
      * @param player the player executing the command
      */
-    private void handleStartCommand(@NonNull Player player) {
+    private void handleStartCommand(@NotNull Player player) {
         if (this.recordingHandler.getPlayerActiveRecording(player).isPresent()) {
             player.sendMessage(MessageUtil.getMessage("command_record_already"));
             return;
         }
 
-        try {
-            InventoryUtil.openMenu(RecordCamerasMenu.class, player);
-        } catch (MenuManagerException | MenuManagerNotSetupException exception) {
-            handleMenuError(player, "recording");
-        }
+        InventoryUtil.openMenu(RecordCamerasMenu.class, player);
     }
 
     /**
@@ -95,7 +91,7 @@ public class ReplayCommand implements CommandExecutor {
      *
      * @param player the player executing the command
      */
-    private void handleStopCommand(@NonNull Player player) {
+    private void handleStopCommand(@NotNull Player player) {
         this.recordingHandler.stopRecording(player);
     }
 
@@ -104,21 +100,7 @@ public class ReplayCommand implements CommandExecutor {
      *
      * @param player the player executing the command
      */
-    private void openReplayMenu(@NonNull Player player) {
-        try {
-            InventoryUtil.openMenu(ReplayCamerasMenu.class, player);
-        } catch (MenuManagerException | MenuManagerNotSetupException exception) {
-            handleMenuError(player, "replay");
-        }
-    }
-
-    /**
-     * Handles menu errors by notifying the player and printing the stack trace.
-     *
-     * @param player the player involved
-     * @param menu   the menu type (e.g., "recording" or "replay")
-     */
-    private void handleMenuError(@NonNull Player player, @NonNull String menu) {
-        player.sendMessage(MessageUtil.getMessage("menu_error", menu));
+    private void openReplayMenu(@NotNull Player player) {
+        InventoryUtil.openMenu(ReplayCamerasMenu.class, player);
     }
 }

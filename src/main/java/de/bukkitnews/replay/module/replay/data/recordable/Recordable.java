@@ -6,14 +6,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 
 @Getter
 @Setter
 @BsonDiscriminator(key = "type", value = "Recordable")
 public abstract class Recordable {
 
-    private ObjectId id;
-    private ObjectId recordingId;
+    private @NotNull ObjectId id;
+    private @NotNull ObjectId recordingId;
     private long tick;
 
     /**

@@ -1,4 +1,4 @@
-package de.bukkitnews.replay.module.replay.handle;
+package de.bukkitnews.replay.module.replay.handler;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
@@ -13,32 +13,26 @@ import de.bukkitnews.replay.module.replay.data.recordable.Recordable;
 import de.bukkitnews.replay.module.replay.data.recording.Recording;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
 import de.bukkitnews.replay.module.replay.data.replay.Replay;
-import de.bukkitnews.replay.module.replay.database.objects.CameraRepository;
-import de.bukkitnews.replay.module.replay.database.objects.RecordableRepository;
+import de.bukkitnews.replay.module.replay.data.camera.CameraRepository;
+import de.bukkitnews.replay.module.replay.data.recordable.RecordableRepository;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
-import lombok.NonNull;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ReplayHandler {
 
-    @NonNull
-    private final RecordableRepository recordableRepository;
-    @NonNull
-    private final CameraRepository cameraRepository;
-    @NonNull
-    private final Set<Replay> replays = new HashSet<>();
-    private final ReplayModule replayModule;
+    private final @NotNull RecordableRepository recordableRepository;
+    private final @NotNull CameraRepository cameraRepository;
+    private final @NotNull Set<Replay> replays = new HashSet<>();
+    private final @NotNull ReplayModule replayModule;
 
-    public ReplayHandler(ReplayModule replayModule, @NonNull RecordableRepository recordableRepository, @NonNull CameraRepository cameraRepository) {
+    public ReplayHandler(@NotNull ReplayModule replayModule, @NotNull RecordableRepository recordableRepository, @NotNull CameraRepository cameraRepository) {
         this.replayModule = replayModule;
         this.recordableRepository = recordableRepository;
         this.cameraRepository = cameraRepository;
@@ -47,18 +41,18 @@ public class ReplayHandler {
     /**
      * Returns the replay for the given player, or null if none is found.
      */
-    public Replay getReplayForPlayer(@NonNull Player player) {
+    public @NotNull Optional<Replay> getReplayForPlayer(@NotNull Player player) {
         return replays.stream()
                 .filter(replay -> replay.getPlayer().equals(player))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
+
 
     /**
      * Starts a replay for a given recording and player.
      */
-    public void replayRecording(@NonNull Recording recording, @NonNull Player player) {
-        if (getReplayForPlayer(player) != null) {
+    public void replayRecording(@NotNull Recording recording, @NotNull Player player) {
+        if (getReplayForPlayer(player).isPresent()) {
             player.sendMessage(MessageUtil.getMessage("replay_already"));
             return;
         }
@@ -72,7 +66,7 @@ public class ReplayHandler {
     /**
      * Loads recordables for the replay within the specified tick range.
      */
-    public void loadRecordables(@NonNull Replay replay, long startTick) {
+    public void loadRecordables(@NotNull Replay replay, long startTick) {
         if (!replay.tryLoadData()) {
             return;
         }
@@ -81,7 +75,7 @@ public class ReplayHandler {
             long endTick = Math.min(startTick + 100, replay.getRecording().getTickDuration());
             Recording recording = replay.getRecording();
 
-            List<Recordable> recordables = recordableRepository.findByRecordingIdAndTickBetween(recording.getId(), startTick, endTick);
+            List<Recordable> recordables = recordableRepository.findInTickRange(recording.getId(), startTick, endTick);
             List<List<Recordable>> groupedRecordables = new ArrayList<>();
             long currentTick = 0;
 
@@ -91,6 +85,7 @@ public class ReplayHandler {
                     tickRecordables.add(recordables.get((int) currentTick));
                     currentTick++;
                 }
+
                 groupedRecordables.add(tickRecordables);
             }
 
@@ -127,7 +122,7 @@ public class ReplayHandler {
     /**
      * Restarts the given replay from the beginning.
      */
-    public void restartReplay(@NonNull Replay replay) {
+    public void restartReplay(@NotNull Replay replay) {
         placeOriginalBlocks(replay.getRecording(), replay.getPlayer());
         replay.getSpawnedEntities().forEach((uuid, entityId) -> {
             WrapperPlayServerDestroyEntities destroyEntities = new WrapperPlayServerDestroyEntities(entityId);
@@ -141,7 +136,7 @@ public class ReplayHandler {
     /**
      * Places the original blocks in the world based on the recording.
      */
-    private void placeOriginalBlocks(@NonNull Recording recording, @NonNull Player viewer) {
+    private void placeOriginalBlocks(@NotNull Recording recording, @NotNull Player viewer) {
         List<Material> originalBlocks = recording.getOriginalBlocks();
         RecordingArea recordingArea = cameraRepository.findById(recording.getCameraId());
 
@@ -170,10 +165,12 @@ public class ReplayHandler {
                 for (int z = startZ; z <= endZ; z++) {
                     Material material = originalBlocks.get(index);
                     Vector3i position = new Vector3i(x, y, z);
+
                     StateType stateType = StateTypes.getByName("minecraft:" + material.name().toLowerCase());
                     WrappedBlockState wrappedBlockState = WrappedBlockState.getDefaultState(stateType);
                     WrapperPlayServerBlockChange blockChangePacket = new WrapperPlayServerBlockChange(position, wrappedBlockState.getGlobalId());
                     PacketEvents.getAPI().getPlayerManager().getUser(viewer).sendPacket(blockChangePacket);
+
                     index++;
                 }
             }
@@ -183,7 +180,7 @@ public class ReplayHandler {
     /**
      * Places the actual blocks in the world based on the recording.
      */
-    private void placeActualBlocks(@NonNull Recording recording, @NonNull Player viewer) {
+    private void placeActualBlocks(@NotNull Recording recording, @NotNull Player viewer) {
         RecordingArea recordingArea = cameraRepository.findById(recording.getCameraId());
 
         Location corner1 = recordingArea.getCorner1().orElse(null);
@@ -211,6 +208,7 @@ public class ReplayHandler {
                 for (int z = startZ; z <= endZ; z++) {
                     Block block = world.getBlockAt(x, y, z);
                     WrappedBlockState actualBlockState = SpigotConversionUtil.fromBukkitBlockData(block.getBlockData());
+
                     Vector3i position = new Vector3i(x, y, z);
                     WrapperPlayServerBlockChange blockChangePacket = new WrapperPlayServerBlockChange(position, actualBlockState.getGlobalId());
                     PacketEvents.getAPI().getPlayerManager().getUser(viewer).sendPacket(blockChangePacket);

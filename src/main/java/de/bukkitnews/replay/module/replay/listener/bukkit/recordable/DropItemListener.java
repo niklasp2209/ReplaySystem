@@ -1,7 +1,7 @@
 package de.bukkitnews.replay.module.replay.listener.bukkit.recordable;
 
 import de.bukkitnews.replay.module.replay.data.recordable.recordables.ItemDropRecordable;
-import de.bukkitnews.replay.module.replay.handle.RecordingHandler;
+import de.bukkitnews.replay.module.replay.handler.RecordingHandler;
 import org.bukkit.entity.Item;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.jetbrains.annotations.NotNull;

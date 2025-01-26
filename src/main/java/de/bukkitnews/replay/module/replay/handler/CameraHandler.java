@@ -1,15 +1,16 @@
-package de.bukkitnews.replay.module.replay.handle;
+package de.bukkitnews.replay.module.replay.handler;
 
 import de.bukkitnews.replay.module.replay.util.ItemUtil;
 import de.bukkitnews.replay.module.replay.util.MessageUtil;
 import de.bukkitnews.replay.module.replay.data.recording.RecordingArea;
-import de.bukkitnews.replay.module.replay.data.recording.Recording;
-import de.bukkitnews.replay.module.replay.database.objects.CameraRepository;
-import lombok.NonNull;
+import de.bukkitnews.replay.module.replay.data.camera.CameraRepository;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -17,44 +18,40 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+@RequiredArgsConstructor
 public class CameraHandler {
 
-    @NonNull private final CameraRepository cameraRepository;
-    @NonNull private final ConcurrentMap<Player, RecordingArea> createdCameras = new ConcurrentHashMap<>();
-
-    public CameraHandler(@NonNull CameraRepository cameraRepository) {
-        this.cameraRepository = cameraRepository;
-    }
+    private final @NotNull CameraRepository cameraRepository;
+    @Getter
+    private final @NotNull ConcurrentMap<Player, RecordingArea> createdCameras = new ConcurrentHashMap<>();
 
     /**
      * Retrieves the camera created by the player, wrapped in an Optional to handle absent cameras.
      */
-    public Optional<RecordingArea> getCreatedCamera(@Nullable Player player) {
+    public @NotNull Optional<RecordingArea> getCreatedCamera(@Nullable Player player) {
         return Optional.ofNullable(createdCameras.get(player));
     }
 
-    /**
-     * Finds a camera by its ID.
-     */
-    public Optional<RecordingArea> findById(@Nullable String id) {
-        return Optional.ofNullable(cameraRepository.findById(new ObjectId(id)));
-    }
 
     /**
      * Retrieves a list of cameras owned by the player, or all cameras if the player is an admin.
      */
-    public List<RecordingArea> getCamerasForPlayer(@NonNull Player player) {
+    public @NotNull List<RecordingArea> getCamerasForPlayer(@NotNull Player player) {
         if (player.hasPermission("replay.command.admin")) {
             return cameraRepository.findAll();
-        } else {
-            return cameraRepository.findAllByOwnerId(player.getUniqueId());
         }
+
+        return cameraRepository.findAllByOwnerId(player.getUniqueId());
+    }
+
+    public @NotNull Optional<RecordingArea> findById(@Nullable String id){
+        return Optional.ofNullable(cameraRepository.findById(new ObjectId(id)));
     }
 
     /**
      * Starts the camera creation process for the player with the given name.
      */
-    public void startCreatingCamera(@NonNull Player player, @NonNull String name) {
+    public void startCreatingCamera(@NotNull Player player, @NotNull String name) {
         if (createdCameras.containsKey(player)) {
             player.sendMessage(MessageUtil.getMessage("camera_creating_already"));
             return;
@@ -80,9 +77,8 @@ public class CameraHandler {
     /**
      * Completes the camera creation process and stores the camera in the database.
      */
-    public void finishCreatingCamera(@NonNull Player player) {
+    public void finishCreatingCamera(@NotNull Player player) {
         RecordingArea recordingArea = createdCameras.remove(player);
-
         if (recordingArea == null) {
             player.sendMessage(MessageUtil.getMessage("camera_creating_nocreating"));
             return;
@@ -96,7 +92,7 @@ public class CameraHandler {
     /**
      * Cancels the camera creation process for the player.
      */
-    public void cancelCreatingCamera(@NonNull Player player) {
+    public void cancelCreatingCamera(@NotNull Player player) {
         if (createdCameras.remove(player) == null) {
             player.sendMessage(MessageUtil.getMessage("camera_creating_nocreating"));
             return;
@@ -104,15 +100,5 @@ public class CameraHandler {
 
         player.getInventory().clear();
         player.sendMessage(MessageUtil.getMessage("camera_creating_cancel"));
-    }
-
-    /**
-     * Starts recording with the given camera for the player.
-     */
-    public void startRecording(@NonNull Player player, @NonNull RecordingArea recordingArea) {
-        Recording recording = new Recording(recordingArea, player);
-
-        player.sendMessage(MessageUtil.getMessage("recording_started1", recordingArea.getName()));
-        player.sendMessage(MessageUtil.getMessage("recording_started2"));
     }
 }

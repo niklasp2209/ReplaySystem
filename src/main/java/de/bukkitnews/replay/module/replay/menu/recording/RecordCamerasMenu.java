@@ -67,7 +67,7 @@ public class RecordCamerasMenu extends MultiMenu {
         }
 
         if (clickedItem.getType() == Material.ENDER_EYE && cameraId != null) {
-            Optional<RecordingArea> optionalCamera = replayModule.getCameraHandler().findById(cameraId);
+            Optional<RecordingArea> optionalCamera = replayModule.getCameraHandler().getCreatedCamera(player);
             optionalCamera.ifPresentOrElse(camera -> handleCameraInteraction(event, camera),
                     () -> player.sendMessage(MessageUtil.getMessage("inventory_error1")));
         }

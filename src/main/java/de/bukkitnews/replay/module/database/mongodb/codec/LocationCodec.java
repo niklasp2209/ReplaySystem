@@ -11,6 +11,7 @@ import org.bson.codecs.EncoderContext;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Codec implementation for serializing and deserializing Bukkit's {@link Location} objects.
@@ -18,7 +19,7 @@ import org.bukkit.World;
 public class LocationCodec implements Codec<Location> {
 
     @Override
-    public Location decode(@NonNull BsonReader reader, @NonNull DecoderContext context) {
+    public @NotNull Location decode(@NotNull BsonReader reader, @NotNull DecoderContext context) {
         Document document = new DocumentCodec().decode(reader, context);
         World world = Bukkit.getWorld(document.getString("world"));
         if (world == null) {
@@ -35,7 +36,7 @@ public class LocationCodec implements Codec<Location> {
     }
 
     @Override
-    public void encode(@NonNull BsonWriter writer, @NonNull Location location, @NonNull EncoderContext context) {
+    public void encode(@NotNull BsonWriter writer, @NotNull Location location, @NotNull EncoderContext context) {
         writer.writeStartDocument();
         writer.writeString("world", location.getWorld().getName());
         writer.writeDouble("x", location.getX());
@@ -47,7 +48,7 @@ public class LocationCodec implements Codec<Location> {
     }
 
     @Override
-    public Class<Location> getEncoderClass() {
+    public @NotNull Class<Location> getEncoderClass() {
         return Location.class;
     }
 }
