@@ -29,6 +29,11 @@ public class ReplayListener implements Listener {
             return;
         }
 
+        ItemStack item = event.getItem();
+        if (item == null) {
+            return;
+        }
+
         Player player = event.getPlayer();
         Optional<Replay> replayOpt = replayHandler.getReplayForPlayer(player);
         if (replayOpt.isEmpty()) {
@@ -36,11 +41,6 @@ public class ReplayListener implements Listener {
         }
 
         Replay replay = replayOpt.get();
-
-        ItemStack item = event.getItem();
-        if (item == null) {
-            return;
-        }
 
         event.setCancelled(true);
 
